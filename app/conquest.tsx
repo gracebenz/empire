@@ -1,0 +1,236 @@
+import { useState } from "react";
+import {
+  View, Text, StyleSheet, TouchableOpacity, FlatList, Modal, ScrollView,
+} from "react-native";
+import { router } from "expo-router";
+import * as Speech from "expo-speech";
+import { useGameStore, Player } from "@/store/gameStore";
+import { colors } from "@/constants/theme";
+
+export default function ConquestScreen() {
+  const { players, empires, capture, phase } = useGameStore();
+  const [capturingFor, setCapturingFor] = useState<string | null>(null); // leaderId
+  const [isReading, setIsReading] = useState(false);
+
+  const getPlayer = (id: string) => players.find((p) => p.id === id)!;
+
+  const rereadNames = () => {
+    setIsReading(true);
+    const names = players.map((p) => p.nickname).join(". ");
+    Speech.speak(`The names once more: ${names}`, {
+      rate: 0.8,
+      pitch: 0.9,
+      onDone: () => setIsReading(false),
+    });
+  };
+
+  const handleCapture = (capturedId: string) => {
+    if (!capturingFor) return;
+    capture(capturingFor, capturedId);
+    setCapturingFor(null);
+    if (phase === "victory") router.replace("/victory");
+  };
+
+  // All players not in guesser's empire (eligible to be captured)
+  const captureTargets = capturingFor
+    ? players.filter((p) => {
+        const guesserEmpire = empires.find((e) => e.leaderId === capturingFor);
+        if (!guesserEmpire) return false;
+        return (
+          p.id !== capturingFor &&
+          !guesserEmpire.memberIds.includes(p.id)
+        );
+      })
+    : [];
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>The Conquest</Text>
+
+      <ScrollView style={styles.empireList} showsVerticalScrollIndicator={false}>
+        {empires.map((empire) => {
+          const leader = getPlayer(empire.leaderId);
+          const members = empire.memberIds.map(getPlayer);
+          return (
+            <View key={empire.leaderId} style={styles.empireCard}>
+              <View style={styles.empireHeader}>
+                <Text style={styles.empireLeader}>👑 {leader.realName}</Text>
+                <Text style={styles.empireSize}>
+                  {empire.memberIds.length + 1} member{empire.memberIds.length !== 0 ? "s" : ""}
+                </Text>
+              </View>
+              {members.length > 0 && (
+                <View style={styles.members}>
+                  {members.map((m) => (
+                    <Text key={m.id} style={styles.member}>• {m.realName}</Text>
+                  ))}
+                </View>
+              )}
+              <TouchableOpacity
+                style={styles.captureButton}
+                onPress={() => setCapturingFor(empire.leaderId)}
+              >
+                <Text style={styles.captureButtonText}>
+                  ⚔️  {leader.realName} made a capture
+                </Text>
+              </TouchableOpacity>
+            </View>
+          );
+        })}
+      </ScrollView>
+
+      <TouchableOpacity
+        style={[styles.rereadButton, isReading && styles.disabled]}
+        onPress={rereadNames}
+        disabled={isReading}
+      >
+        <Text style={styles.rereadText}>
+          {isReading ? "🐭 Reading..." : "🐭 Re-read the Names"}
+        </Text>
+      </TouchableOpacity>
+
+      {/* Capture target picker modal */}
+      <Modal
+        visible={!!capturingFor}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setCapturingFor(null)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalSheet}>
+            <Text style={styles.modalTitle}>Who was captured?</Text>
+            <Text style={styles.modalSubtitle}>
+              Select the player whose nickname was correctly guessed.
+            </Text>
+            {captureTargets.map((p) => (
+              <TouchableOpacity
+                key={p.id}
+                style={styles.targetRow}
+                onPress={() => handleCapture(p.id)}
+              >
+                <Text style={styles.targetName}>{p.realName}</Text>
+                <Text style={styles.targetArrow}>→</Text>
+              </TouchableOpacity>
+            ))}
+            <TouchableOpacity
+              style={styles.cancelButton}
+              onPress={() => setCapturingFor(null)}
+            >
+              <Text style={styles.cancelText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.parchment,
+    paddingTop: 72,
+    paddingHorizontal: 20,
+    alignItems: "center",
+  },
+  title: {
+    fontSize: 32,
+    fontFamily: "serif",
+    color: colors.ink,
+    letterSpacing: 2,
+    marginBottom: 20,
+  },
+  empireList: { width: "100%", flex: 1 },
+  empireCard: {
+    backgroundColor: colors.scrollBg,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: 16,
+    marginBottom: 14,
+  },
+  empireHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 6,
+  },
+  empireLeader: {
+    fontSize: 18,
+    fontFamily: "serif",
+    color: colors.ink,
+  },
+  empireSize: {
+    fontSize: 12,
+    color: colors.inkLight,
+    fontStyle: "italic",
+  },
+  members: { marginBottom: 10, gap: 2 },
+  member: { fontSize: 14, color: colors.inkLight, paddingLeft: 8 },
+  captureButton: {
+    backgroundColor: colors.amber,
+    borderRadius: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: colors.ink,
+    marginTop: 4,
+  },
+  captureButtonText: {
+    color: colors.ink,
+    fontFamily: "serif",
+    fontSize: 13,
+    letterSpacing: 0.5,
+  },
+  rereadButton: {
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: colors.border,
+    marginVertical: 16,
+  },
+  rereadText: { color: colors.inkLight, fontFamily: "serif", fontSize: 14 },
+  disabled: { opacity: 0.5 },
+  // Modal
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(44,24,16,0.5)",
+    justifyContent: "flex-end",
+  },
+  modalSheet: {
+    backgroundColor: colors.parchment,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    padding: 28,
+    gap: 12,
+  },
+  modalTitle: {
+    fontSize: 22,
+    fontFamily: "serif",
+    color: colors.ink,
+    textAlign: "center",
+  },
+  modalSubtitle: {
+    fontSize: 13,
+    color: colors.inkLight,
+    textAlign: "center",
+    fontStyle: "italic",
+    marginBottom: 4,
+  },
+  targetRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: colors.scrollBg,
+    borderRadius: 12,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  targetName: { fontSize: 18, fontFamily: "serif", color: colors.ink },
+  targetArrow: { fontSize: 18, color: colors.inkLight },
+  cancelButton: { paddingVertical: 12, alignItems: "center" },
+  cancelText: { color: colors.inkLight, textDecorationLine: "underline", fontSize: 14 },
+});
