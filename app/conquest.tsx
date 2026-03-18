@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   View, Text, StyleSheet, TouchableOpacity, FlatList, Modal, ScrollView,
 } from "react-native";
@@ -11,6 +11,10 @@ export default function ConquestScreen() {
   const { players, empires, capture, phase } = useGameStore();
   const [capturingFor, setCapturingFor] = useState<string | null>(null); // leaderId
   const [isReading, setIsReading] = useState(false);
+
+  useEffect(() => {
+    if (phase === "victory") router.replace("/victory");
+  }, [phase]);
 
   const getPlayer = (id: string) => players.find((p) => p.id === id)!;
 
@@ -28,7 +32,6 @@ export default function ConquestScreen() {
     if (!capturingFor) return;
     capture(capturingFor, capturedId);
     setCapturingFor(null);
-    if (phase === "victory") router.replace("/victory");
   };
 
   // All players not in guesser's empire (eligible to be captured)
