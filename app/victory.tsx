@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { router } from "expo-router";
 import { useGameStore } from "@/store/gameStore";
-import { colors } from "@/constants/theme";
+import { colors, fonts } from "@/constants/theme";
 
 export default function VictoryScreen() {
   const { empires, players, resetGame } = useGameStore();
@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 36,
-    fontFamily: "serif",
+    fontFamily: fonts.heading,
     color: colors.ink,
     letterSpacing: 1,
     textAlign: "center",
@@ -67,14 +67,14 @@ const styles = StyleSheet.create({
   },
   winnerName: {
     fontSize: 48,
-    fontFamily: "serif",
-    color: colors.violet,
+    fontFamily: fonts.heading,
+    color: colors.midnightViolet,
     letterSpacing: 1,
   },
   winnerNickname: {
     fontSize: 20,
-    fontFamily: "serif",
-    color: colors.tangerine,
+    fontFamily: fonts.body,
+    color: colors.darkTeal,
     fontStyle: "italic",
   },
   mortyBox: { alignItems: "center", marginTop: 16, gap: 6 },
@@ -94,5 +94,5 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: colors.ink,
   },
-  buttonText: { color: colors.cream, fontSize: 16, fontFamily: "serif", letterSpacing: 1 },
+  buttonText: { color: colors.cream, fontSize: 13, fontFamily: fonts.button, letterSpacing: 4, textTransform: "uppercase" },
 });

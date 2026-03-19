@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, FlatList } from "react-native
 import { router } from "expo-router";
 import * as Speech from "expo-speech";
 import { useGameStore } from "@/store/gameStore";
-import { colors } from "@/constants/theme";
+import { colors, fonts } from "@/constants/theme";
 
 export default function ProclamationScreen() {
   const { players, startConquest } = useGameStore();
@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
   crown: { fontSize: 40 },
   title: {
     fontSize: 32,
-    fontFamily: "serif",
+    fontFamily: fonts.heading,
     color: colors.ink,
     letterSpacing: 2,
     marginVertical: 8,
@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.scrollBorder,
   },
   nameNumber: { width: 24, fontSize: 14, color: colors.inkLight, fontStyle: "italic" },
-  nickname: { fontSize: 20, fontFamily: "serif", color: colors.ink, letterSpacing: 0.5 },
+  nickname: { fontSize: 20, fontFamily: fonts.body, color: colors.ink, letterSpacing: 0.5 },
   rereadButton: {
     paddingVertical: 12,
     paddingHorizontal: 24,
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     backgroundColor: colors.scrollBg,
   },
-  rereadText: { color: colors.inkLight, fontFamily: "serif", fontSize: 14 },
+  rereadText: { color: colors.inkLight, fontFamily: fonts.body, fontSize: 14 },
   conquestButton: {
     backgroundColor: colors.accent,
     borderRadius: 32,
@@ -119,6 +119,6 @@ const styles = StyleSheet.create({
     borderColor: colors.ink,
     marginBottom: 40,
   },
-  conquestButtonText: { color: colors.cream, fontSize: 16, fontFamily: "serif", letterSpacing: 1 },
+  conquestButtonText: { color: colors.cream, fontSize: 13, fontFamily: fonts.button, letterSpacing: 4, textTransform: "uppercase" },
   disabled: { opacity: 0.5 },
 });

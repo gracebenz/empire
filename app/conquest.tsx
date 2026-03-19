@@ -5,7 +5,7 @@ import {
 import { router } from "expo-router";
 import * as Speech from "expo-speech";
 import { useGameStore } from "@/store/gameStore";
-import { colors } from "@/constants/theme";
+import { colors, fonts } from "@/constants/theme";
 
 export default function ConquestScreen() {
   const { players, empires, capture, phase } = useGameStore();
@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 32,
-    fontFamily: "serif",
+    fontFamily: fonts.heading,
     color: colors.ink,
     letterSpacing: 2,
     marginBottom: 20,
@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 6,
   },
-  empireLeader: { fontSize: 18, fontFamily: "serif", color: colors.ink },
+  empireLeader: { fontSize: 18, fontFamily: fonts.body, color: colors.ink },
   empireSize: { fontSize: 12, color: colors.inkLight, fontStyle: "italic" },
   members: { marginBottom: 10, gap: 2 },
   member: { fontSize: 14, color: colors.inkLight, paddingLeft: 8 },
@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
     borderColor: colors.scrollBorder,
     marginTop: 4,
   },
-  captureButtonText: { color: colors.ink, fontFamily: "serif", fontSize: 13, letterSpacing: 0.5 },
+  captureButtonText: { color: colors.ink, fontFamily: fonts.button, fontSize: 11, letterSpacing: 3, textTransform: "uppercase" },
   rereadButton: {
     paddingVertical: 12,
     paddingHorizontal: 24,
@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
     marginVertical: 16,
     backgroundColor: colors.scrollBg,
   },
-  rereadText: { color: colors.inkLight, fontFamily: "serif", fontSize: 14 },
+  rereadText: { color: colors.inkLight, fontFamily: fonts.body, fontSize: 14 },
   disabled: { opacity: 0.5 },
   modalOverlay: {
     flex: 1,
@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
     padding: 28,
     gap: 12,
   },
-  modalTitle: { fontSize: 22, fontFamily: "serif", color: colors.ink, textAlign: "center" },
+  modalTitle: { fontSize: 22, fontFamily: fonts.heading, color: colors.ink, textAlign: "center" },
   modalSubtitle: {
     fontSize: 13,
     color: colors.inkLight,
@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.scrollBorder,
   },
-  targetName: { fontSize: 18, fontFamily: "serif", color: colors.ink },
+  targetName: { fontSize: 18, fontFamily: fonts.body, color: colors.ink },
   targetArrow: { fontSize: 18, color: colors.inkLight },
   cancelButton: { paddingVertical: 12, alignItems: "center" },
   cancelText: { color: colors.inkLight, textDecorationLine: "underline", fontSize: 14 },

@@ -11,19 +11,23 @@ const palette = {
 };
 
 // ─── ROLES ───────────────────────────────────────────────────────────────────
-// These map palette colors to their purpose in the UI.
-// Change roles here if you want to reassign which palette color does what.
 
 export const colors = {
-  background:   palette.powderBlue,      // main screen background
-  scrollBg:     palette.lightGold,       // cards, scrolls, input backgrounds
-  scrollBorder: palette.wisteriaBlue,    // borders and dividers
-  ink:          palette.darkTeal,        // primary text
-  inkLight:     palette.wisteriaBlue,    // secondary / hint text
-  accent:       palette.midnightViolet,  // primary buttons (CTAs)
-  accentSoft:   palette.wisteriaBlue,    // secondary buttons
-  cream:        palette.offWhite,        // text on dark backgrounds
-
-  // Raw palette exposed for one-off use
+  background:   palette.powderBlue,
+  scrollBg:     palette.lightGold,
+  scrollBorder: palette.wisteriaBlue,
+  ink:          palette.darkTeal,
+  inkLight:     palette.wisteriaBlue,
+  accent:       palette.midnightViolet,
+  accentSoft:   palette.wisteriaBlue,
+  cream:        palette.offWhite,
   ...palette,
+};
+
+// ─── FONTS ───────────────────────────────────────────────────────────────────
+
+export const fonts = {
+  heading:  "Cinzel_700Bold",
+  button:   "Cinzel_400Regular",
+  body:     "serif",
 };

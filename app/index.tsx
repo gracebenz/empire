@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { router } from "expo-router";
 import { useGameStore } from "@/store/gameStore";
-import { colors } from "@/constants/theme";
+import { colors, fonts } from "@/constants/theme";
 
 export default function WelcomeScreen() {
   const resetGame = useGameStore((s) => s.resetGame);
@@ -20,7 +20,7 @@ export default function WelcomeScreen() {
         <Text style={styles.morty}>🐭</Text>
         <Text style={styles.mortyName}>Morty awaits your command</Text>
         <TouchableOpacity style={styles.button} onPress={handleBegin}>
-          <Text style={styles.buttonText}>Begin a New Game</Text>
+          <Text style={styles.buttonText}>New Game</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -34,44 +34,38 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  content: {
-    alignItems: "center",
-    gap: 12,
-    paddingHorizontal: 32,
-  },
+  content: { alignItems: "center", gap: 12, paddingHorizontal: 32 },
   crown: { fontSize: 48 },
   title: {
     fontSize: 52,
-    fontFamily: "serif",
+    fontFamily: fonts.heading,
     color: colors.ink,
-    letterSpacing: 4,
+    letterSpacing: 6,
   },
   subtitle: {
-    fontSize: 14,
+    fontSize: 12,
+    fontFamily: fonts.button,
     color: colors.inkLight,
     letterSpacing: 2,
     textTransform: "uppercase",
     textAlign: "center",
   },
   morty: { fontSize: 72, marginTop: 16 },
-  mortyName: {
-    fontSize: 13,
-    color: colors.inkLight,
-    fontStyle: "italic",
-  },
+  mortyName: { fontSize: 13, color: colors.inkLight, fontStyle: "italic", fontFamily: fonts.body },
   button: {
     marginTop: 32,
     backgroundColor: colors.accent,
-    paddingHorizontal: 36,
-    paddingVertical: 16,
-    borderRadius: 32,
+    paddingHorizontal: 48,
+    paddingVertical: 18,
+    borderRadius: 4,
     borderWidth: 2,
     borderColor: colors.ink,
   },
   buttonText: {
     color: colors.cream,
-    fontSize: 16,
-    fontFamily: "serif",
-    letterSpacing: 1,
+    fontSize: 15,
+    fontFamily: fonts.button,
+    letterSpacing: 4,
+    textTransform: "uppercase",
   },
 });

@@ -1,125 +1,112 @@
 import { useState } from "react";
 import {
   View, Text, StyleSheet, TextInput, TouchableOpacity,
-  KeyboardAvoidingView, Platform,
+  KeyboardAvoidingView, Platform, ScrollView,
 } from "react-native";
 import { router } from "expo-router";
 import { useGameStore } from "@/store/gameStore";
-import { colors } from "@/constants/theme";
+import { colors, fonts } from "@/constants/theme";
 
-type Step = "closed" | "real-name" | "nickname" | "sealed";
+type Step = "entry" | "sealed";
 
 export default function SecretScrollScreen() {
-  const addPlayer = useGameStore((s) => s.addPlayer);
-  const [step, setStep] = useState<Step>("closed");
+  const { addPlayer, players } = useGameStore();
+  const [step, setStep] = useState<Step>("entry");
   const [realName, setRealName] = useState("");
   const [nickname, setNickname] = useState("");
 
-  const handleUnroll = () => setStep("real-name");
-
-  const handleRealNameNext = () => {
-    if (!realName.trim()) return;
-    setStep("nickname");
-  };
+  const canSeal = realName.trim().length > 0 && nickname.trim().length > 0;
 
   const handleSeal = () => {
-    if (!nickname.trim()) return;
+    if (!canSeal) return;
     addPlayer(realName.trim(), nickname.trim());
     setStep("sealed");
   };
+
+  const handleNextPlayer = () => {
+    setRealName("");
+    setNickname("");
+    setStep("entry");
+  };
+
+  if (step === "sealed") {
+    return (
+      <View style={styles.sealedContainer}>
+        <Text style={styles.sealEmoji}>🎀</Text>
+        <Text style={styles.sealedTitle}>Scroll Sealed!</Text>
+        <Text style={styles.sealedHint}>
+          Hand the phone to the next player, or return to the Throne Room.
+        </Text>
+        <TouchableOpacity style={styles.primaryButton} onPress={handleNextPlayer}>
+          <Text style={styles.primaryButtonText}>Next Player</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.ghostButton} onPress={() => router.back()}>
+          <Text style={styles.ghostButtonText}>Back to Throne Room</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   return (
     <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      {step === "closed" && (
-        <View style={styles.center}>
-          <Text style={styles.scrollEmoji}>📜</Text>
-          <Text style={styles.title}>A Secret Scroll</Text>
-          <Text style={styles.hint}>Tap to unroll and inscribe your name</Text>
-          <TouchableOpacity style={styles.primaryButton} onPress={handleUnroll}>
-            <Text style={styles.primaryButtonText}>Unroll the Scroll</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+      {/* Scroll header */}
+      <View style={styles.scrollHeader}>
+        <Text style={styles.scrollHeaderRule}>— ✦ —</Text>
+        <Text style={styles.scrollTitle}>The Secret{"\n"}Name Scroll</Text>
+        <Text style={styles.scrollHeaderRule}>— ✦ —</Text>
+      </View>
 
-      {step === "real-name" && (
-        <View style={styles.center}>
-          <Text style={styles.scrollEmoji}>📜</Text>
-          <Text style={styles.title}>Your True Name</Text>
-          <Text style={styles.hint}>
-            Shown to others so they know who to guess at — not your nickname.
-          </Text>
-          <TextInput
-            style={styles.input}
-            placeholder="e.g. Grace"
-            placeholderTextColor={colors.scrollBorder}
-            value={realName}
-            onChangeText={setRealName}
-            autoFocus
-            returnKeyType="next"
-            onSubmitEditing={handleRealNameNext}
-          />
-          <TouchableOpacity
-            style={[styles.primaryButton, !realName.trim() && styles.disabled]}
-            onPress={handleRealNameNext}
-            disabled={!realName.trim()}
-          >
-            <Text style={styles.primaryButtonText}>Next →</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+      <ScrollView contentContainerStyle={styles.scrollBody} keyboardShouldPersistTaps="handled">
+        {/* Previously sealed names */}
+        {players.length > 0 && (
+          <View style={styles.sealedSection}>
+            <Text style={styles.sealedSectionLabel}>Oaths Already Sworn</Text>
+            {players.map((p, i) => (
+              <View key={p.id} style={styles.sealedEntry}>
+                <Text style={styles.sealedEntryName}>{p.realName}</Text>
+                <Text style={styles.sealedEntryGlyph}>✦ ✦ ✦ ✦ ✦</Text>
+              </View>
+            ))}
+            <View style={styles.divider} />
+          </View>
+        )}
 
-      {step === "nickname" && (
-        <View style={styles.center}>
-          <Text style={styles.scrollEmoji}>🤫</Text>
-          <Text style={styles.title}>Your Secret Nickname</Text>
-          <Text style={styles.hint}>
-            Choose wisely. No one must see this but you.
-          </Text>
-          <TextInput
-            style={styles.input}
-            placeholder="e.g. The Grumpy Grape"
-            placeholderTextColor={colors.scrollBorder}
-            value={nickname}
-            onChangeText={setNickname}
-            autoFocus
-            returnKeyType="done"
-            onSubmitEditing={handleSeal}
-          />
-          <TouchableOpacity
-            style={[styles.primaryButton, !nickname.trim() && styles.disabled]}
-            onPress={handleSeal}
-            disabled={!nickname.trim()}
-          >
-            <Text style={styles.primaryButtonText}>🔒  Seal the Scroll</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+        {/* Inputs */}
+        <Text style={styles.inputLabel}>Your True Name</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="e.g. Grace"
+          placeholderTextColor={colors.scrollBorder}
+          value={realName}
+          onChangeText={setRealName}
+          returnKeyType="next"
+          autoFocus
+        />
 
-      {step === "sealed" && (
-        <View style={styles.center}>
-          <Text style={styles.scrollEmoji}>🎀</Text>
-          <Text style={styles.title}>Scroll Sealed!</Text>
-          <Text style={styles.hint}>
-            Hand the phone to the next player, or return to the Throne Room.
-          </Text>
-          <TouchableOpacity
-            style={styles.primaryButton}
-            onPress={() => {
-              setStep("closed");
-              setRealName("");
-              setNickname("");
-            }}
-          >
-            <Text style={styles.primaryButtonText}>Next Player</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.secondaryButton} onPress={() => router.back()}>
-            <Text style={styles.secondaryButtonText}>Back to Throne Room</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+        <Text style={styles.inputLabel}>Your Secret Nickname</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="e.g. The Grumpy Grape"
+          placeholderTextColor={colors.scrollBorder}
+          value={nickname}
+          onChangeText={setNickname}
+          returnKeyType="done"
+          onSubmitEditing={handleSeal}
+        />
+
+        <TouchableOpacity
+          style={[styles.primaryButton, !canSeal && styles.disabled]}
+          onPress={handleSeal}
+          disabled={!canSeal}
+        >
+          <Text style={styles.primaryButtonText}>🔒  Seal the Scroll</Text>
+        </TouchableOpacity>
+
+        <Text style={styles.scrollFooterRule}>— ✦ —</Text>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 }
@@ -127,62 +114,135 @@ export default function SecretScrollScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.lightGold,
-    justifyContent: "center",
+    backgroundColor: colors.scrollBg,
   },
-  center: {
+  scrollHeader: {
+    alignItems: "center",
+    paddingTop: 64,
+    paddingBottom: 20,
+    paddingHorizontal: 32,
+    backgroundColor: colors.scrollBg,
+  },
+  scrollHeaderRule: {
+    fontSize: 16,
+    color: colors.inkLight,
+    letterSpacing: 4,
+  },
+  scrollTitle: {
+    fontFamily: fonts.heading,
+    fontSize: 28,
+    color: colors.ink,
+    letterSpacing: 2,
+    textAlign: "center",
+    lineHeight: 40,
+    marginVertical: 8,
+  },
+  scrollBody: {
+    paddingHorizontal: 28,
+    paddingBottom: 48,
+    gap: 12,
+  },
+  sealedSection: { marginBottom: 8 },
+  sealedSectionLabel: {
+    fontFamily: fonts.button,
+    fontSize: 10,
+    color: colors.inkLight,
+    letterSpacing: 3,
+    textTransform: "uppercase",
+    textAlign: "center",
+    marginBottom: 10,
+  },
+  sealedEntry: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.scrollBorder + "55",
+  },
+  sealedEntryName: { fontFamily: fonts.body, fontSize: 15, color: colors.ink },
+  sealedEntryGlyph: { fontSize: 12, color: colors.inkLight, letterSpacing: 3 },
+  divider: {
+    height: 1,
+    backgroundColor: colors.scrollBorder,
+    marginVertical: 16,
+    opacity: 0.4,
+  },
+  inputLabel: {
+    fontFamily: fonts.button,
+    fontSize: 10,
+    color: colors.inkLight,
+    letterSpacing: 3,
+    textTransform: "uppercase",
+    marginBottom: 4,
+    marginTop: 8,
+  },
+  input: {
+    backgroundColor: colors.offWhite,
+    borderWidth: 1.5,
+    borderColor: colors.scrollBorder,
+    borderRadius: 4,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    fontSize: 18,
+    fontFamily: fonts.body,
+    color: colors.ink,
+  },
+  primaryButton: {
+    backgroundColor: colors.accent,
+    borderRadius: 4,
+    paddingVertical: 18,
+    alignItems: "center",
+    borderWidth: 2,
+    borderColor: colors.ink,
+    marginTop: 16,
+  },
+  primaryButtonText: {
+    color: colors.cream,
+    fontSize: 13,
+    fontFamily: fonts.button,
+    letterSpacing: 4,
+    textTransform: "uppercase",
+  },
+  scrollFooterRule: {
+    textAlign: "center",
+    fontSize: 16,
+    color: colors.inkLight,
+    letterSpacing: 4,
+    marginTop: 8,
+  },
+  disabled: { opacity: 0.4 },
+
+  // Sealed confirmation
+  sealedContainer: {
+    flex: 1,
+    backgroundColor: colors.scrollBg,
+    justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 32,
     gap: 16,
   },
-  scrollEmoji: { fontSize: 72 },
-  title: {
+  sealEmoji: { fontSize: 64 },
+  sealedTitle: {
+    fontFamily: fonts.heading,
     fontSize: 28,
-    fontFamily: "serif",
     color: colors.ink,
-    letterSpacing: 1,
-    textAlign: "center",
+    letterSpacing: 3,
   },
-  hint: {
-    fontSize: 13,
+  sealedHint: {
+    fontFamily: fonts.body,
+    fontSize: 14,
     color: colors.inkLight,
     textAlign: "center",
     fontStyle: "italic",
-    lineHeight: 20,
+    lineHeight: 22,
   },
-  input: {
-    width: "100%",
-    backgroundColor: colors.cream,
-    borderWidth: 1.5,
-    borderColor: colors.scrollBorder,
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    fontSize: 18,
-    fontFamily: "serif",
-    color: colors.ink,
-    textAlign: "center",
-  },
-  primaryButton: {
-    backgroundColor: colors.accent,
-    borderRadius: 32,
-    paddingVertical: 14,
-    paddingHorizontal: 36,
-    borderWidth: 2,
-    borderColor: colors.ink,
-    marginTop: 8,
-  },
-  primaryButtonText: {
-    color: colors.cream,
-    fontSize: 16,
-    fontFamily: "serif",
-    letterSpacing: 1,
-  },
-  secondaryButton: { paddingVertical: 12 },
-  secondaryButtonText: {
+  ghostButton: { paddingVertical: 12 },
+  ghostButtonText: {
     color: colors.inkLight,
-    fontSize: 14,
+    fontFamily: fonts.button,
+    fontSize: 11,
+    letterSpacing: 2,
+    textTransform: "uppercase",
     textDecorationLine: "underline",
   },
-  disabled: { opacity: 0.4 },
 });

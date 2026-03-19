@@ -1,12 +1,10 @@
-import { View, Text, StyleSheet, TouchableOpacity, FlatList } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
 import { router } from "expo-router";
 import { useGameStore } from "@/store/gameStore";
-import { colors } from "@/constants/theme";
+import { colors, fonts } from "@/constants/theme";
 
 export default function ThroneRoomScreen() {
   const { players, removePlayer, startProclamation } = useGameStore();
-
-  const handleAddPlayer = () => router.push("/secret-scroll");
 
   const handleSealArchive = () => {
     startProclamation();
@@ -15,36 +13,35 @@ export default function ThroneRoomScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>The Throne Room</Text>
+      <Text style={styles.title}>Throne Room</Text>
       <Text style={styles.subtitle}>
         Pass the phone. Each player shall inscribe their secret name.
       </Text>
 
-      <View style={styles.scrollList}>
+      {/* Sealed scroll list */}
+      <ScrollView style={styles.list} contentContainerStyle={styles.listContent}>
         {players.length === 0 ? (
-          <Text style={styles.empty}>No scrolls yet...</Text>
+          <Text style={styles.empty}>~ The archive hungers for names ~</Text>
         ) : (
-          <FlatList
-            data={players}
-            keyExtractor={(p) => p.id}
-            renderItem={({ item, index }) => (
-              <View style={styles.playerRow}>
-                <Text style={styles.playerIndex}>{index + 1}.</Text>
-                <Text style={styles.playerName}>{item.realName}</Text>
-                <Text style={styles.playerSealed}>📜 Sealed</Text>
-                <TouchableOpacity onPress={() => removePlayer(item.id)}>
-                  <Text style={styles.remove}>✕</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-          />
+          players.map((p, i) => (
+            <View key={p.id} style={styles.sealedRow}>
+              <Text style={styles.sealedIndex}>{i + 1}.</Text>
+              <Text style={styles.sealedName}>{p.realName}</Text>
+              <Text style={styles.sealedGlyph}>✦ ✦ ✦</Text>
+              <TouchableOpacity onPress={() => removePlayer(p.id)}>
+                <Text style={styles.remove}>✕</Text>
+              </TouchableOpacity>
+            </View>
+          ))
         )}
-      </View>
+      </ScrollView>
 
-      <TouchableOpacity style={styles.addButton} onPress={handleAddPlayer}>
-        <Text style={styles.addButtonText}>+ Add a Player</Text>
+      {/* Center action */}
+      <TouchableOpacity style={styles.addButton} onPress={() => router.push("/secret-scroll")}>
+        <Text style={styles.addButtonText}>+ Add Name</Text>
       </TouchableOpacity>
 
+      {/* Bottom seal — only appears with 2+ players */}
       {players.length >= 2 && (
         <TouchableOpacity style={styles.sealButton} onPress={handleSealArchive}>
           <Text style={styles.sealButtonText}>🐭  Seal the Archive</Text>
@@ -64,72 +61,77 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 32,
-    fontFamily: "serif",
+    fontFamily: fonts.heading,
     color: colors.ink,
-    letterSpacing: 2,
+    letterSpacing: 3,
     marginBottom: 8,
   },
   subtitle: {
-    fontSize: 13,
+    fontSize: 12,
     color: colors.inkLight,
     textAlign: "center",
     fontStyle: "italic",
-    marginBottom: 32,
+    fontFamily: fonts.body,
+    marginBottom: 24,
     lineHeight: 20,
   },
-  scrollList: { width: "100%", flex: 1 },
+  list: { width: "100%", flex: 1 },
+  listContent: { gap: 10, paddingBottom: 16 },
   empty: {
     textAlign: "center",
     color: colors.inkLight,
     fontStyle: "italic",
-    marginTop: 32,
+    fontFamily: fonts.body,
+    marginTop: 40,
+    letterSpacing: 1,
   },
-  playerRow: {
+  sealedRow: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: colors.scrollBg,
-    borderRadius: 12,
+    borderRadius: 8,
     padding: 14,
-    marginBottom: 10,
     borderWidth: 1,
     borderColor: colors.scrollBorder,
     gap: 8,
   },
-  playerIndex: { color: colors.inkLight, fontSize: 14, width: 20 },
-  playerName: { flex: 1, fontSize: 16, color: colors.ink, fontFamily: "serif" },
-  playerSealed: { fontSize: 12, color: colors.inkLight },
-  remove: { fontSize: 16, color: colors.inkLight, paddingHorizontal: 4 },
+  sealedIndex: { color: colors.inkLight, fontSize: 13, width: 20, fontFamily: fonts.body },
+  sealedName: { flex: 1, fontSize: 16, color: colors.ink, fontFamily: fonts.heading, letterSpacing: 1 },
+  sealedGlyph: { fontSize: 13, color: colors.inkLight, letterSpacing: 2 },
+  remove: { fontSize: 14, color: colors.inkLight, paddingHorizontal: 4 },
   addButton: {
     backgroundColor: colors.scrollBg,
-    borderWidth: 1.5,
+    borderWidth: 2,
     borderColor: colors.scrollBorder,
-    borderStyle: "dashed",
-    borderRadius: 16,
-    paddingVertical: 14,
-    paddingHorizontal: 32,
+    borderRadius: 4,
+    paddingVertical: 18,
+    paddingHorizontal: 48,
     marginBottom: 16,
-    width: "100%",
     alignItems: "center",
   },
   addButtonText: {
-    fontSize: 15,
-    color: colors.inkLight,
-    fontFamily: "serif",
-    letterSpacing: 1,
+    fontSize: 14,
+    fontFamily: fonts.button,
+    color: colors.ink,
+    letterSpacing: 4,
+    textTransform: "uppercase",
   },
   sealButton: {
     backgroundColor: colors.accent,
-    borderRadius: 32,
-    paddingVertical: 16,
-    paddingHorizontal: 36,
-    marginBottom: 40,
+    borderRadius: 4,
+    paddingVertical: 18,
+    paddingHorizontal: 48,
+    marginBottom: 48,
     borderWidth: 2,
     borderColor: colors.ink,
+    width: "100%",
+    alignItems: "center",
   },
   sealButtonText: {
     color: colors.cream,
-    fontSize: 16,
-    fontFamily: "serif",
-    letterSpacing: 1,
+    fontSize: 14,
+    fontFamily: fonts.button,
+    letterSpacing: 4,
+    textTransform: "uppercase",
   },
 });
