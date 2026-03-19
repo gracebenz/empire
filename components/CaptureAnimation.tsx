@@ -93,7 +93,7 @@ export default function CaptureAnimation({ capturedName, capturingName, onComple
   const overlayOpacity  = useSharedValue(0);
 
   // Full name — fades out at the moment the blade starts
-  const nameScale       = useSharedValue(0.4);
+  const nameScale       = useSharedValue(0.85);
   const nameOpacity     = useSharedValue(0);
   const fullNameVisible = useSharedValue(1);
 
@@ -115,7 +115,7 @@ export default function CaptureAnimation({ capturedName, capturingName, onComple
     // ── Phase 1: Overlay + name springs in (0–400ms) ─────────
     overlayOpacity.value = withTiming(1, { duration: 200 });
     nameOpacity.value    = withTiming(1, { duration: 250 });
-    nameScale.value      = withSpring(1, { damping: 10, stiffness: 180 });
+    nameScale.value      = withTiming(1, { duration: 200 });
 
     // ── Phase 2: Blade sweeps across (SLASH_START → +SWEEP_DURATION) ─
     bladeOpacity.value = withDelay(SLASH_START, withTiming(1, { duration: 60 }));
@@ -152,7 +152,7 @@ export default function CaptureAnimation({ capturedName, capturingName, onComple
         absorbOpacity.value = withDelay(
           600,
           withTiming(1, { duration: 400 }, () => {
-            runOnJS(setTimeout)(onComplete, 2400);
+            runOnJS(setTimeout)(onComplete, 1200);
           })
         );
       })
