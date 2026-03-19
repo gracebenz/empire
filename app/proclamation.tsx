@@ -1,14 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, FlatList } from "react-native";
 import { router } from "expo-router";
 import * as Speech from "expo-speech";
 import { useGameStore } from "@/store/gameStore";
 import { colors, fonts } from "@/constants/theme";
+import { getBestNarratorVoice } from "@/utils/voice";
 
 export default function ProclamationScreen() {
   const { players, startConquest } = useGameStore();
   const [hasRead, setHasRead] = useState(false);
   const [isReading, setIsReading] = useState(false);
+  const voiceRef = useRef<string | undefined>(undefined);
 
   const readNames = () => {
     setIsReading(true);
@@ -16,14 +18,18 @@ export default function ProclamationScreen() {
     const names = players.map((p) => p.nickname).join(". ");
     const outro = "Let the conquest begin.";
     Speech.speak(`${intro} ${names}. ${outro}`, {
-      rate: 0.8,
-      pitch: 0.9,
+      rate: 0.75,
+      pitch: 0.85,
+      voice: voiceRef.current,
       onDone: () => { setIsReading(false); setHasRead(true); },
     });
   };
 
   useEffect(() => {
-    readNames();
+    getBestNarratorVoice().then((id) => {
+      voiceRef.current = id;
+      readNames();
+    });
     return () => { Speech.stop(); };
   }, []);
 

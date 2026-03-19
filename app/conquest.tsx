@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   View, Text, StyleSheet, TouchableOpacity, Modal, ScrollView,
 } from "react-native";
@@ -7,6 +7,7 @@ import * as Speech from "expo-speech";
 import { useGameStore } from "@/store/gameStore";
 import { colors, fonts } from "@/constants/theme";
 import CaptureAnimation from "@/components/CaptureAnimation";
+import { getBestNarratorVoice } from "@/utils/voice";
 
 export default function ConquestScreen() {
   const { players, empires, capture, phase } = useGameStore();
@@ -16,6 +17,11 @@ export default function ConquestScreen() {
     capturedId: string;
     capturingId: string;
   } | null>(null);
+  const voiceRef = useRef<string | undefined>(undefined);
+
+  useEffect(() => {
+    getBestNarratorVoice().then((id) => { voiceRef.current = id; });
+  }, []);
 
   useEffect(() => {
     if (phase === "victory") router.replace("/victory");
@@ -27,8 +33,9 @@ export default function ConquestScreen() {
     setIsReading(true);
     const names = players.map((p) => p.nickname).join(". ");
     Speech.speak(`The names once more: ${names}`, {
-      rate: 0.8,
-      pitch: 0.9,
+      rate: 0.75,
+      pitch: 0.85,
+      voice: voiceRef.current,
       onDone: () => setIsReading(false),
     });
   };
