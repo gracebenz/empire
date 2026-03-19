@@ -1,18 +1,29 @@
-export const colors = {
-  // Core palette
-  celadon: "#bcd8c1",
-  vanillaCustard: "#d6dbb2",
-  lightGold: "#e3d985",
-  tangerine: "#e57a44",
-  violet: "#422040",
+// ─── PALETTE ─────────────────────────────────────────────────────────────────
+// Swap these values to change the entire theme.
 
-  // Roles
-  background: "#d6dbb2",      // vanilla custard — main bg
-  scrollBg: "#e3d985",        // light gold — cards, scrolls
-  scrollBorder: "#bcd8c1",    // celadon — borders
-  ink: "#422040",             // midnight violet — primary text
-  inkLight: "#6b3668",        // lightened violet — secondary text
-  accent: "#e57a44",          // tangerine — primary buttons/CTAs
-  accentSoft: "#bcd8c1",      // celadon — secondary buttons
-  cream: "#f5f0e8",           // off-white — text on dark backgrounds
+const palette = {
+  powderBlue:     "#9fbbcc",
+  wisteriaBlue:   "#7a9cc6",
+  lightGold:      "#e3d985",
+  darkTeal:       "#0b3c49",
+  midnightViolet: "#422040",
+  offWhite:       "#f5f0e8",
+};
+
+// ─── ROLES ───────────────────────────────────────────────────────────────────
+// These map palette colors to their purpose in the UI.
+// Change roles here if you want to reassign which palette color does what.
+
+export const colors = {
+  background:   palette.powderBlue,      // main screen background
+  scrollBg:     palette.lightGold,       // cards, scrolls, input backgrounds
+  scrollBorder: palette.wisteriaBlue,    // borders and dividers
+  ink:          palette.darkTeal,        // primary text
+  inkLight:     palette.wisteriaBlue,    // secondary / hint text
+  accent:       palette.midnightViolet,  // primary buttons (CTAs)
+  accentSoft:   palette.wisteriaBlue,    // secondary buttons
+  cream:        palette.offWhite,        // text on dark backgrounds
+
+  // Raw palette exposed for one-off use
+  ...palette,
 };
