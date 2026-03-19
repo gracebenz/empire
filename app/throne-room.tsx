@@ -18,28 +18,28 @@ export default function ThroneRoomScreen() {
         Pass the phone. Each player shall inscribe their secret name.
       </Text>
 
-      {/* Sealed scroll list */}
-      <ScrollView style={styles.list} contentContainerStyle={styles.listContent}>
-        {players.length === 0 ? (
-          <Text style={styles.empty}>~ The archive hungers for names ~</Text>
-        ) : (
-          players.map((p, i) => (
-            <View key={p.id} style={styles.sealedRow}>
-              <Text style={styles.sealedIndex}>{i + 1}.</Text>
-              <Text style={styles.sealedName}>{p.realName}</Text>
-              <Text style={styles.sealedGlyph}>✦ ✦ ✦</Text>
-              <TouchableOpacity onPress={() => removePlayer(p.id)}>
-                <Text style={styles.remove}>✕</Text>
-              </TouchableOpacity>
-            </View>
-          ))
+      <View style={styles.middle}>
+        {/* Sealed scroll list */}
+        {players.length > 0 && (
+          <ScrollView style={styles.list} contentContainerStyle={styles.listContent}>
+            {players.map((p, i) => (
+              <View key={p.id} style={styles.sealedRow}>
+                <Text style={styles.sealedIndex}>{i + 1}.</Text>
+                <Text style={styles.sealedName}>{p.realName}</Text>
+                <Text style={styles.sealedGlyph}>✦ ✦ ✦</Text>
+                <TouchableOpacity onPress={() => removePlayer(p.id)}>
+                  <Text style={styles.remove}>✕</Text>
+                </TouchableOpacity>
+              </View>
+            ))}
+          </ScrollView>
         )}
-      </ScrollView>
 
-      {/* Center action */}
-      <TouchableOpacity style={styles.addButton} onPress={() => router.push("/secret-scroll")}>
-        <Text style={styles.addButtonText}>+ Add Name</Text>
-      </TouchableOpacity>
+        {/* Add name button — centered when no players, below list otherwise */}
+        <TouchableOpacity style={styles.addButton} onPress={() => router.push("/secret-scroll")}>
+          <Text style={styles.addButtonText}>+ Add Name</Text>
+        </TouchableOpacity>
+      </View>
 
       {/* Bottom seal — only appears with 2+ players */}
       {players.length >= 2 && (
@@ -75,7 +75,13 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     lineHeight: 20,
   },
-  list: { width: "100%", flex: 1 },
+  middle: {
+    flex: 1,
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  list: { width: "100%", flexGrow: 0, maxHeight: "70%" },
   listContent: { gap: 10, paddingBottom: 16 },
   empty: {
     textAlign: "center",
