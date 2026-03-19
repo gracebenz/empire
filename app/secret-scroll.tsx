@@ -7,10 +7,11 @@ import { router } from "expo-router";
 import { useGameStore } from "@/store/gameStore";
 import { colors, fonts } from "@/constants/theme";
 
+
 type Step = "entry" | "sealed";
 
 export default function SecretScrollScreen() {
-  const { addPlayer, players } = useGameStore();
+  const { addPlayer, players, startProclamation } = useGameStore();
   const [step, setStep] = useState<Step>("entry");
   const [realName, setRealName] = useState("");
   const [nickname, setNickname] = useState("");
@@ -29,6 +30,11 @@ export default function SecretScrollScreen() {
     setStep("entry");
   };
 
+  const handleBeginGame = () => {
+    startProclamation();
+    router.replace("/proclamation");
+  };
+
   if (step === "sealed") {
     return (
       <View style={styles.sealedContainer}>
@@ -40,8 +46,13 @@ export default function SecretScrollScreen() {
         <TouchableOpacity style={[styles.primaryButton, styles.nextPlayerButton]} onPress={handleNextPlayer}>
           <Text style={styles.primaryButtonText}>Next Player</Text>
         </TouchableOpacity>
+        {players.length >= 2 && (
+          <TouchableOpacity style={[styles.primaryButton, styles.nextPlayerButton, styles.beginButton]} onPress={handleBeginGame}>
+            <Text style={styles.primaryButtonText}>⚔️  Begin the Game</Text>
+          </TouchableOpacity>
+        )}
         <TouchableOpacity style={styles.ghostButton} onPress={() => router.replace("/throne-room")}>
-          <Text style={styles.ghostButtonText}>Back to Throne Room</Text>
+          <Text style={styles.ghostButtonText}>← Throne Room</Text>
         </TouchableOpacity>
       </View>
     );
@@ -253,9 +264,11 @@ const styles = StyleSheet.create({
   ghostButtonText: {
     color: colors.inkLight,
     fontFamily: fonts.button,
-    fontSize: 11,
+    fontSize: 10,
     letterSpacing: 2,
     textTransform: "uppercase",
-    textDecorationLine: "underline",
+  },
+  beginButton: {
+    backgroundColor: colors.ink,
   },
 });
