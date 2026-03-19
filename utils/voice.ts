@@ -49,3 +49,39 @@ export async function getBestNarratorVoice(): Promise<string | undefined> {
 
   return ranked[0]?.v.identifier ?? undefined;
 }
+
+type SpeakOptions = {
+  voice?: string;
+  rate?: number;
+  pitch?: number;
+  pauseMs?: number;  // gap between each phrase
+  onDone?: () => void;
+};
+
+/**
+ * Speaks an array of phrases in order, with an optional pause between each.
+ */
+export function speakSequence(phrases: string[], opts: SpeakOptions = {}): void {
+  const { voice, rate = 0.75, pitch = 0.85, pauseMs = 0, onDone } = opts;
+
+  const speak = (index: number) => {
+    if (index >= phrases.length) {
+      onDone?.();
+      return;
+    }
+    Speech.speak(phrases[index], {
+      voice,
+      rate,
+      pitch,
+      onDone: () => {
+        if (index < phrases.length - 1 && pauseMs > 0) {
+          setTimeout(() => speak(index + 1), pauseMs);
+        } else {
+          speak(index + 1);
+        }
+      },
+    });
+  };
+
+  speak(0);
+}

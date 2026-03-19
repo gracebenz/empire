@@ -3,11 +3,10 @@ import {
   View, Text, StyleSheet, TouchableOpacity, Modal, ScrollView,
 } from "react-native";
 import { router } from "expo-router";
-import * as Speech from "expo-speech";
 import { useGameStore } from "@/store/gameStore";
 import { colors, fonts } from "@/constants/theme";
 import CaptureAnimation from "@/components/CaptureAnimation";
-import { getBestNarratorVoice } from "@/utils/voice";
+import { getBestNarratorVoice, speakSequence } from "@/utils/voice";
 
 export default function ConquestScreen() {
   const { players, empires, capture, phase } = useGameStore();
@@ -31,11 +30,15 @@ export default function ConquestScreen() {
 
   const rereadNames = () => {
     setIsReading(true);
-    const names = players.map((p) => p.nickname).join(". ");
-    Speech.speak(`The names once more: ${names}`, {
+    const phrases = [
+      "The names once more.",
+      ...players.map((p) => p.nickname),
+    ];
+    speakSequence(phrases, {
+      voice: voiceRef.current,
       rate: 0.75,
       pitch: 0.85,
-      voice: voiceRef.current,
+      pauseMs: 1500,
       onDone: () => setIsReading(false),
     });
   };

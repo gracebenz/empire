@@ -4,7 +4,7 @@ import { router } from "expo-router";
 import * as Speech from "expo-speech";
 import { useGameStore } from "@/store/gameStore";
 import { colors, fonts } from "@/constants/theme";
-import { getBestNarratorVoice } from "@/utils/voice";
+import { getBestNarratorVoice, speakSequence } from "@/utils/voice";
 
 export default function ProclamationScreen() {
   const { players, startConquest } = useGameStore();
@@ -14,13 +14,16 @@ export default function ProclamationScreen() {
 
   const readNames = () => {
     setIsReading(true);
-    const intro = "Hear ye, hear ye. The secret names of this gathering are as follows.";
-    const names = players.map((p) => p.nickname).join(". ");
-    const outro = "Let the conquest begin.";
-    Speech.speak(`${intro} ${names}. ${outro}`, {
+    const phrases = [
+      "Hear ye, hear ye. The secret names of this gathering are as follows.",
+      ...players.map((p) => p.nickname),
+      "Let the conquest begin.",
+    ];
+    speakSequence(phrases, {
+      voice: voiceRef.current,
       rate: 0.75,
       pitch: 0.85,
-      voice: voiceRef.current,
+      pauseMs: 1500,
       onDone: () => { setIsReading(false); setHasRead(true); },
     });
   };
