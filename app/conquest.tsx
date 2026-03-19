@@ -6,11 +6,16 @@ import { router } from "expo-router";
 import * as Speech from "expo-speech";
 import { useGameStore } from "@/store/gameStore";
 import { colors, fonts } from "@/constants/theme";
+import CaptureAnimation from "@/components/CaptureAnimation";
 
 export default function ConquestScreen() {
   const { players, empires, capture, phase } = useGameStore();
   const [capturingFor, setCapturingFor] = useState<string | null>(null);
   const [isReading, setIsReading] = useState(false);
+  const [pendingCapture, setPendingCapture] = useState<{
+    capturedId: string;
+    capturingId: string;
+  } | null>(null);
 
   useEffect(() => {
     if (phase === "victory") router.replace("/victory");
@@ -30,8 +35,15 @@ export default function ConquestScreen() {
 
   const handleCapture = (capturedId: string) => {
     if (!capturingFor) return;
-    capture(capturingFor, capturedId);
+    // Close the modal and start the knife-fight animation
     setCapturingFor(null);
+    setPendingCapture({ capturedId, capturingId: capturingFor });
+  };
+
+  const handleAnimationComplete = () => {
+    if (!pendingCapture) return;
+    capture(pendingCapture.capturingId, pendingCapture.capturedId);
+    setPendingCapture(null);
   };
 
   const captureTargets = capturingFor
@@ -87,6 +99,15 @@ export default function ConquestScreen() {
           {isReading ? "🐭 Reading..." : "🐭 Re-read the Names"}
         </Text>
       </TouchableOpacity>
+
+      {/* Knife-fight animation overlay */}
+      {pendingCapture && (
+        <CaptureAnimation
+          capturedName={getPlayer(pendingCapture.capturedId).realName}
+          capturingName={getPlayer(pendingCapture.capturingId).realName}
+          onComplete={handleAnimationComplete}
+        />
+      )}
 
       <Modal
         visible={!!capturingFor}
@@ -159,7 +180,7 @@ const styles = StyleSheet.create({
   member: { fontSize: 14, color: colors.inkLight, paddingLeft: 8 },
   captureButton: {
     backgroundColor: colors.celadon,
-    borderRadius: 20,
+    borderRadius: 999,
     paddingVertical: 10,
     paddingHorizontal: 16,
     alignItems: "center",
@@ -171,7 +192,7 @@ const styles = StyleSheet.create({
   rereadButton: {
     paddingVertical: 12,
     paddingHorizontal: 24,
-    borderRadius: 24,
+    borderRadius: 999,
     borderWidth: 1,
     borderColor: colors.scrollBorder,
     marginVertical: 16,

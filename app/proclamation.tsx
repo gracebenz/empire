@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
   rereadButton: {
     paddingVertical: 12,
     paddingHorizontal: 24,
-    borderRadius: 24,
+    borderRadius: 999,
     borderWidth: 1,
     borderColor: colors.scrollBorder,
     marginBottom: 16,
@@ -112,11 +112,9 @@ const styles = StyleSheet.create({
   rereadText: { color: colors.inkLight, fontFamily: fonts.body, fontSize: 14 },
   conquestButton: {
     backgroundColor: colors.accent,
-    borderRadius: 32,
+    borderRadius: 999,
     paddingVertical: 16,
     paddingHorizontal: 36,
-    borderWidth: 2,
-    borderColor: colors.ink,
     marginBottom: 40,
   },
   conquestButtonText: { color: colors.cream, fontSize: 13, fontFamily: fonts.button, letterSpacing: 4, textTransform: "uppercase" },

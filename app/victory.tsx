@@ -90,9 +90,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.accent,
     paddingHorizontal: 36,
     paddingVertical: 16,
-    borderRadius: 32,
-    borderWidth: 2,
-    borderColor: colors.ink,
+    borderRadius: 999,
   },
   buttonText: { color: colors.cream, fontSize: 13, fontFamily: fonts.button, letterSpacing: 4, textTransform: "uppercase" },
 });

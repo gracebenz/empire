@@ -37,10 +37,10 @@ export default function SecretScrollScreen() {
         <Text style={styles.sealedHint}>
           Hand the phone to the next player, or return to the Throne Room.
         </Text>
-        <TouchableOpacity style={styles.primaryButton} onPress={handleNextPlayer}>
+        <TouchableOpacity style={[styles.primaryButton, styles.nextPlayerButton]} onPress={handleNextPlayer}>
           <Text style={styles.primaryButtonText}>Next Player</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.ghostButton} onPress={() => router.back()}>
+        <TouchableOpacity style={styles.ghostButton} onPress={() => router.replace("/throne-room")}>
           <Text style={styles.ghostButtonText}>Back to Throne Room</Text>
         </TouchableOpacity>
       </View>
@@ -54,7 +54,7 @@ export default function SecretScrollScreen() {
     >
       {/* Scroll header */}
       <View style={styles.scrollHeader}>
-        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+        <TouchableOpacity style={styles.backButton} onPress={() => router.replace("/throne-room")}>
           <Text style={styles.backButtonText}>← Throne Room</Text>
         </TouchableOpacity>
         <Text style={styles.scrollHeaderRule}>— ✦ —</Text>
@@ -200,12 +200,14 @@ const styles = StyleSheet.create({
   },
   primaryButton: {
     backgroundColor: colors.accent,
-    borderRadius: 4,
+    borderRadius: 999,
     paddingVertical: 18,
     alignItems: "center",
-    borderWidth: 2,
-    borderColor: colors.ink,
     marginTop: 16,
+  },
+  nextPlayerButton: {
+    paddingHorizontal: 48,
+    paddingVertical: 20,
   },
   primaryButtonText: {
     color: colors.cream,
