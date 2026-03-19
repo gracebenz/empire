@@ -78,13 +78,16 @@ export default function ConquestScreen() {
               <View style={styles.empireHeader}>
                 <Text style={styles.empireLeader}>👑 {leader.realName}</Text>
                 <Text style={styles.empireSize}>
-                  {empire.memberIds.length + 1} disciple{empire.memberIds.length !== 0 ? "s" : ""}
+                  {empire.memberIds.length} disciple{empire.memberIds.length !== 1 ? "s" : ""}
                 </Text>
               </View>
               {disciples.length > 0 && (
                 <View style={styles.members}>
                   {disciples.map((m) => (
-                    <Text key={m.id} style={styles.member}>• {m.realName}</Text>
+                    <View key={m.id} style={styles.discipleRow}>
+                      <Text style={styles.discipleName}>{m.realName}</Text>
+                      <Text style={styles.discipleNickname}>({m.nickname})</Text>
+                    </View>
                   ))}
                 </View>
               )}
@@ -187,8 +190,24 @@ const styles = StyleSheet.create({
   },
   empireLeader: { fontSize: 18, fontFamily: fonts.body, color: colors.ink },
   empireSize: { fontSize: 12, color: colors.inkLight, fontStyle: "italic" },
-  members: { marginBottom: 10, gap: 2 },
-  member: { fontSize: 14, color: colors.inkLight, paddingLeft: 8 },
+  members: {
+    marginTop: 4,
+    marginBottom: 10,
+    gap: 0,
+    borderTopWidth: 1,
+    borderTopColor: colors.scrollBorder + "44",
+  },
+  discipleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingVertical: 6,
+    paddingHorizontal: 4,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.scrollBorder + "44",
+  },
+  discipleName: { fontSize: 14, fontFamily: fonts.body, color: colors.ink },
+  discipleNickname: { fontSize: 12, fontFamily: fonts.body, color: colors.inkLight, fontStyle: "italic" },
   captureButton: {
     backgroundColor: colors.celadon,
     borderRadius: 999,
