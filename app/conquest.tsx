@@ -50,7 +50,8 @@ export default function ConquestScreen() {
     ? players.filter((p) => {
         const guesserEmpire = empires.find((e) => e.leaderId === capturingFor);
         if (!guesserEmpire) return false;
-        return p.id !== capturingFor && !guesserEmpire.memberIds.includes(p.id);
+        const isLeader = empires.some((e) => e.leaderId === p.id);
+        return isLeader && p.id !== capturingFor && !guesserEmpire.memberIds.includes(p.id);
       })
     : [];
 
