@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
     marginVertical: 16,
     backgroundColor: colors.scrollBg,
   },
-  rereadText: { color: colors.inkLight, fontFamily: fonts.body, fontSize: 14 },
+  rereadText: { color: colors.inkLight, fontFamily: fonts.button, fontSize: 10, letterSpacing: 2, textTransform: "uppercase" },
   disabled: { opacity: 0.5 },
   modalOverlay: {
     flex: 1,

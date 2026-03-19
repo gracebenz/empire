@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     backgroundColor: colors.scrollBg,
   },
-  rereadText: { color: colors.inkLight, fontFamily: fonts.body, fontSize: 14 },
+  rereadText: { color: colors.inkLight, fontFamily: fonts.button, fontSize: 10, letterSpacing: 2, textTransform: "uppercase" },
   conquestButton: {
     backgroundColor: colors.accent,
     borderRadius: 999,
