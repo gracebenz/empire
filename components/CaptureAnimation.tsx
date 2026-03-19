@@ -185,27 +185,30 @@ export default function CaptureAnimation({ capturedName, capturingName, onComple
       <Animated.View style={[StyleSheet.absoluteFillObject, styles.flash, flashStyle]} />
 
       <View style={styles.center}>
-        {/* Full name — visible before the blade hits */}
-        <Animated.View style={fullNameStyle}>
-          <Text style={styles.capturedName}>{capturedName}</Text>
-        </Animated.View>
+        {/* nameZone — all name-aligned elements share this positioning context */}
+        <View style={styles.nameZone}>
+          {/* Full name — visible before the blade hits */}
+          <Animated.View style={fullNameStyle}>
+            <Text style={styles.capturedName}>{capturedName}</Text>
+          </Animated.View>
 
-        {/* Shards — appear letter-by-letter as blade crosses */}
-        <View style={styles.shardsRow} pointerEvents="none">
-          {chars.map((char, i) => (
-            <CharShard key={i} char={char} {...getShardProps(i, chars.length)} />
-          ))}
+          {/* Shards — absolute, centered on the text line */}
+          <View style={styles.shardsRow} pointerEvents="none">
+            {chars.map((char, i) => (
+              <CharShard key={i} char={char} {...getShardProps(i, chars.length)} />
+            ))}
+          </View>
+
+          {/* Scar line — absolute, pinned to vertical center of nameZone */}
+          <Animated.View style={[styles.slashLine, slashStyle]} />
+
+          {/* Blade — absolute, pinned to vertical center of nameZone */}
+          <Animated.View style={[styles.bladeContainer, bladeStyle]} pointerEvents="none">
+            <View style={styles.bladeGlow} />
+            <View style={styles.bladeCore} />
+            <View style={styles.bladeGlow} />
+          </Animated.View>
         </View>
-
-        {/* Scar line — grows left to right in sync with the blade */}
-        <Animated.View style={[styles.slashLine, slashStyle]} />
-
-        {/* Blade — a glowing white sliver */}
-        <Animated.View style={[styles.bladeContainer, bladeStyle]} pointerEvents="none">
-          <View style={styles.bladeGlow} />
-          <View style={styles.bladeCore} />
-          <View style={styles.bladeGlow} />
-        </Animated.View>
 
         {/* Result label */}
         <Animated.View style={[styles.absorbContainer, absorbStyle]}>
@@ -229,6 +232,13 @@ const styles = StyleSheet.create({
     gap: 8,
   },
 
+  // Wrapper that gives the scar/shards/blade a shared positioning context
+  nameZone: {
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
   capturedName: {
     fontFamily: fonts.heading,
     fontSize: 36,
@@ -242,6 +252,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
+    // top: "50%" centers on the text line; marginTop offsets half the ~44px line height
+    top: "50%",
+    marginTop: -22,
   },
   shardChar: {
     fontFamily: fonts.heading,
@@ -251,20 +264,23 @@ const styles = StyleSheet.create({
   },
   spaceGap: { width: 12 },
 
-  // Scar line — starts at left edge of name, grows rightward
+  // Scar line — pinned to the vertical center of nameZone, grows rightward
   slashLine: {
     position: "absolute",
     height: 2,
     backgroundColor: colors.lightGold,
-    // Anchored to the left so it grows rightward
     left: "10%",
+    top: "50%",
+    marginTop: -1,
   },
 
-  // Blade — three layered views for a glow effect
+  // Blade — pinned to the vertical center of nameZone
   bladeContainer: {
     position: "absolute",
     flexDirection: "row",
     alignItems: "center",
+    top: "50%",
+    marginTop: -45, // half of 90px blade core height
   },
   bladeGlow: {
     width: 6,
