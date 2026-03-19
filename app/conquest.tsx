@@ -264,5 +264,5 @@ const styles = StyleSheet.create({
   targetName: { fontSize: 18, fontFamily: fonts.body, color: colors.ink },
   targetArrow: { fontSize: 18, color: colors.inkLight },
   cancelButton: { paddingVertical: 12, alignItems: "center" },
-  cancelText: { color: colors.inkLight, textDecorationLine: "underline", fontSize: 14 },
+  cancelText: { color: colors.inkLight, fontFamily: fonts.button, fontSize: 10, letterSpacing: 2, textTransform: "uppercase" },
 });
