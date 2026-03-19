@@ -62,18 +62,18 @@ export default function ConquestScreen() {
       <ScrollView style={styles.empireList} showsVerticalScrollIndicator={false}>
         {empires.map((empire) => {
           const leader = getPlayer(empire.leaderId);
-          const members = empire.memberIds.map(getPlayer);
+          const disciples = empire.memberIds.map(getPlayer);
           return (
             <View key={empire.leaderId} style={styles.empireCard}>
               <View style={styles.empireHeader}>
                 <Text style={styles.empireLeader}>👑 {leader.realName}</Text>
                 <Text style={styles.empireSize}>
-                  {empire.memberIds.length + 1} member{empire.memberIds.length !== 0 ? "s" : ""}
+                  {empire.memberIds.length + 1} disciple{empire.memberIds.length !== 0 ? "s" : ""}
                 </Text>
               </View>
-              {members.length > 0 && (
+              {disciples.length > 0 && (
                 <View style={styles.members}>
-                  {members.map((m) => (
+                  {disciples.map((m) => (
                     <Text key={m.id} style={styles.member}>• {m.realName}</Text>
                   ))}
                 </View>
@@ -83,7 +83,7 @@ export default function ConquestScreen() {
                 onPress={() => setCapturingFor(empire.leaderId)}
               >
                 <Text style={styles.captureButtonText}>
-                  ⚔️  {leader.realName} made a capture
+                  ⚔️  <Text style={styles.captureButtonName}>{leader.realName}</Text> made a capture
                 </Text>
               </TouchableOpacity>
             </View>
@@ -190,6 +190,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   captureButtonText: { color: colors.ink, fontFamily: fonts.button, fontSize: 11, letterSpacing: 3, textTransform: "uppercase" },
+  captureButtonName: { fontFamily: fonts.heading, fontSize: 12 },
   rereadButton: {
     paddingVertical: 12,
     paddingHorizontal: 24,
