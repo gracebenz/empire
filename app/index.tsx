@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
     textAlign: "center",
   },
-  morty: { width: 180, height: 180, marginTop: 8 },
+  morty: { width: 180, height: 180, marginTop: 8, backgroundColor: colors.background },
   mortyName: { fontSize: 13, color: colors.inkLight, fontStyle: "italic", fontFamily: fonts.body },
   button: {
     marginTop: 32,
