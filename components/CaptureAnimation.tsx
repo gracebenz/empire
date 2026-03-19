@@ -98,8 +98,9 @@ export default function CaptureAnimation({ capturedName, capturingName, onComple
   const nameOpacity     = useSharedValue(0);
   const fullNameVisible = useSharedValue(1);
 
-  // Knife sweep
-  const knifeX          = useSharedValue(-SCREEN_WIDTH);
+  // Knife sweep — starts top-left, slashes diagonally to bottom-right
+  const knifeX          = useSharedValue(-SCREEN_WIDTH / 2 - 60);
+  const knifeY          = useSharedValue(-120);
   const knifeOpacity    = useSharedValue(0);
 
   // Slash scar line
@@ -120,13 +121,15 @@ export default function CaptureAnimation({ capturedName, capturingName, onComple
     nameOpacity.value    = withTiming(1, { duration: 250 });
     nameScale.value      = withSpring(1, { damping: 10, stiffness: 180 });
 
-    // ── Phase 2: Knife sweeps (380–580ms) ────────────────────
-    knifeOpacity.value = withDelay(380, withTiming(1, { duration: 60 }));
+    // ── Phase 2: Knife sweeps diagonally (starts 900ms, sweeps 550ms) ──
+    knifeOpacity.value = withDelay(900, withTiming(1, { duration: 80 }));
+    // Diagonal Y track — top to bottom as knife crosses
+    knifeY.value = withDelay(900, withTiming(120, { duration: 550, easing: Easing.inOut(Easing.quad) }));
     knifeX.value = withDelay(
-      380,
-      withTiming(SCREEN_WIDTH + 80, {
-        duration: 220,
-        easing: Easing.out(Easing.quad),
+      900,
+      withTiming(SCREEN_WIDTH / 2 + 60, {
+        duration: 550,
+        easing: Easing.inOut(Easing.quad),
       }, () => {
         // ── Phase 3: Impact ───────────────────────────────────
         // White flash
@@ -167,7 +170,11 @@ export default function CaptureAnimation({ capturedName, capturingName, onComple
     transform: [{ scale: nameScale.value }],
   }));
   const knifeStyle      = useAnimatedStyle(() => ({
-    transform: [{ translateX: knifeX.value }, { rotate: "-15deg" }],
+    transform: [
+      { translateX: knifeX.value },
+      { translateY: knifeY.value },
+      { rotate: "35deg" },
+    ],
     opacity: knifeOpacity.value,
   }));
   const slashStyle      = useAnimatedStyle(() => ({
@@ -271,7 +278,7 @@ const styles = StyleSheet.create({
     height: 2,
     backgroundColor: colors.lightGold,
     opacity: 0.9,
-    transform: [{ rotate: "-3deg" }],
+    transform: [{ rotate: "20deg" }],
   },
 
   knifeContainer: { position: "absolute" },
