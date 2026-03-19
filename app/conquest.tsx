@@ -114,7 +114,7 @@ export default function ConquestScreen() {
       {/* Knife-fight animation overlay */}
       {pendingCapture && (
         <CaptureAnimation
-          capturedName={getPlayer(pendingCapture.capturedId).realName}
+          capturedName={getPlayer(pendingCapture.capturedId).nickname}
           capturingName={getPlayer(pendingCapture.capturingId).realName}
           onComplete={handleAnimationComplete}
         />
