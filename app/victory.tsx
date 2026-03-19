@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { router } from "expo-router";
 import { useGameStore } from "@/store/gameStore";
 import { colors, fonts } from "@/constants/theme";
@@ -23,7 +23,7 @@ export default function VictoryScreen() {
           <Text style={styles.winnerName}>{winner.realName}</Text>
           <Text style={styles.winnerNickname}>"{winner.nickname}"</Text>
           <View style={styles.mortyBox}>
-            <Text style={styles.morty}>🐭👑</Text>
+            <Image source={require("@/assets/morty.png")} style={styles.morty} />
             <Text style={styles.mortyText}>Morty bows to the conquering empire.</Text>
           </View>
         </>
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
     fontStyle: "italic",
   },
   mortyBox: { alignItems: "center", marginTop: 16, gap: 6 },
-  morty: { fontSize: 56 },
+  morty: { width: 140, height: 140 },
   mortyText: {
     fontSize: 13,
     color: colors.inkLight,

@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { router } from "expo-router";
 import { useGameStore } from "@/store/gameStore";
 import { colors, fonts } from "@/constants/theme";
@@ -14,10 +14,9 @@ export default function WelcomeScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.content}>
-        <Text style={styles.crown}>👑</Text>
         <Text style={styles.title}>Empire</Text>
         <Text style={styles.subtitle}>A Game of Nicknames & Conquest</Text>
-        <Text style={styles.morty}>🐭</Text>
+        <Image source={require("@/assets/morty.png")} style={styles.morty} />
         <Text style={styles.mortyName}>Morty awaits your command</Text>
         <TouchableOpacity style={styles.button} onPress={handleBegin}>
           <Text style={styles.buttonText}>New Game</Text>
@@ -35,7 +34,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   content: { alignItems: "center", gap: 12, paddingHorizontal: 32 },
-  crown: { fontSize: 48 },
   title: {
     fontSize: 52,
     fontFamily: fonts.heading,
@@ -50,7 +48,7 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
     textAlign: "center",
   },
-  morty: { fontSize: 72, marginTop: 16 },
+  morty: { width: 180, height: 180, marginTop: 8 },
   mortyName: { fontSize: 13, color: colors.inkLight, fontStyle: "italic", fontFamily: fonts.body },
   button: {
     marginTop: 32,
