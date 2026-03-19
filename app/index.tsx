@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { router } from "expo-router";
 import { useGameStore } from "@/store/gameStore";
 import { colors } from "@/constants/theme";
@@ -30,7 +30,7 @@ export default function WelcomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.parchment,
+    backgroundColor: colors.background,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 32,
-    backgroundColor: colors.forest,
+    backgroundColor: colors.accent,
     paddingHorizontal: 36,
     paddingVertical: 16,
     borderRadius: 32,

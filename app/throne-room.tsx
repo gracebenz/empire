@@ -6,9 +6,7 @@ import { colors } from "@/constants/theme";
 export default function ThroneRoomScreen() {
   const { players, removePlayer, startProclamation } = useGameStore();
 
-  const handleAddPlayer = () => {
-    router.push("/secret-scroll");
-  };
+  const handleAddPlayer = () => router.push("/secret-scroll");
 
   const handleSealArchive = () => {
     startProclamation();
@@ -59,7 +57,7 @@ export default function ThroneRoomScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.parchment,
+    backgroundColor: colors.background,
     paddingTop: 72,
     paddingHorizontal: 24,
     alignItems: "center",
@@ -79,13 +77,10 @@ const styles = StyleSheet.create({
     marginBottom: 32,
     lineHeight: 20,
   },
-  scrollList: {
-    width: "100%",
-    flex: 1,
-  },
+  scrollList: { width: "100%", flex: 1 },
   empty: {
     textAlign: "center",
-    color: colors.border,
+    color: colors.inkLight,
     fontStyle: "italic",
     marginTop: 32,
   },
@@ -97,33 +92,17 @@ const styles = StyleSheet.create({
     padding: 14,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors.scrollBorder,
     gap: 8,
   },
-  playerIndex: {
-    color: colors.inkLight,
-    fontSize: 14,
-    width: 20,
-  },
-  playerName: {
-    flex: 1,
-    fontSize: 16,
-    color: colors.ink,
-    fontFamily: "serif",
-  },
-  playerSealed: {
-    fontSize: 12,
-    color: colors.inkLight,
-  },
-  remove: {
-    fontSize: 16,
-    color: colors.border,
-    paddingHorizontal: 4,
-  },
+  playerIndex: { color: colors.inkLight, fontSize: 14, width: 20 },
+  playerName: { flex: 1, fontSize: 16, color: colors.ink, fontFamily: "serif" },
+  playerSealed: { fontSize: 12, color: colors.inkLight },
+  remove: { fontSize: 16, color: colors.inkLight, paddingHorizontal: 4 },
   addButton: {
     backgroundColor: colors.scrollBg,
     borderWidth: 1.5,
-    borderColor: colors.border,
+    borderColor: colors.scrollBorder,
     borderStyle: "dashed",
     borderRadius: 16,
     paddingVertical: 14,
@@ -139,7 +118,7 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
   sealButton: {
-    backgroundColor: colors.forest,
+    backgroundColor: colors.accent,
     borderRadius: 32,
     paddingVertical: 16,
     paddingHorizontal: 36,

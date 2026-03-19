@@ -1,15 +1,15 @@
 import { useState, useEffect } from "react";
 import {
-  View, Text, StyleSheet, TouchableOpacity, FlatList, Modal, ScrollView,
+  View, Text, StyleSheet, TouchableOpacity, Modal, ScrollView,
 } from "react-native";
 import { router } from "expo-router";
 import * as Speech from "expo-speech";
-import { useGameStore, Player } from "@/store/gameStore";
+import { useGameStore } from "@/store/gameStore";
 import { colors } from "@/constants/theme";
 
 export default function ConquestScreen() {
   const { players, empires, capture, phase } = useGameStore();
-  const [capturingFor, setCapturingFor] = useState<string | null>(null); // leaderId
+  const [capturingFor, setCapturingFor] = useState<string | null>(null);
   const [isReading, setIsReading] = useState(false);
 
   useEffect(() => {
@@ -34,15 +34,11 @@ export default function ConquestScreen() {
     setCapturingFor(null);
   };
 
-  // All players not in guesser's empire (eligible to be captured)
   const captureTargets = capturingFor
     ? players.filter((p) => {
         const guesserEmpire = empires.find((e) => e.leaderId === capturingFor);
         if (!guesserEmpire) return false;
-        return (
-          p.id !== capturingFor &&
-          !guesserEmpire.memberIds.includes(p.id)
-        );
+        return p.id !== capturingFor && !guesserEmpire.memberIds.includes(p.id);
       })
     : [];
 
@@ -92,7 +88,6 @@ export default function ConquestScreen() {
         </Text>
       </TouchableOpacity>
 
-      {/* Capture target picker modal */}
       <Modal
         visible={!!capturingFor}
         transparent
@@ -101,9 +96,9 @@ export default function ConquestScreen() {
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalSheet}>
-            <Text style={styles.modalTitle}>Who was captured?</Text>
+            <Text style={styles.modalTitle}>A Royal Revelation!</Text>
             <Text style={styles.modalSubtitle}>
-              Select the player whose nickname was correctly guessed.
+              Which player's secret was spilled?
             </Text>
             {captureTargets.map((p) => (
               <TouchableOpacity
@@ -131,7 +126,7 @@ export default function ConquestScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.parchment,
+    backgroundColor: colors.background,
     paddingTop: 72,
     paddingHorizontal: 20,
     alignItems: "center",
@@ -148,7 +143,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.scrollBg,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors.scrollBorder,
     padding: 16,
     marginBottom: 14,
   },
@@ -158,63 +153,45 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 6,
   },
-  empireLeader: {
-    fontSize: 18,
-    fontFamily: "serif",
-    color: colors.ink,
-  },
-  empireSize: {
-    fontSize: 12,
-    color: colors.inkLight,
-    fontStyle: "italic",
-  },
+  empireLeader: { fontSize: 18, fontFamily: "serif", color: colors.ink },
+  empireSize: { fontSize: 12, color: colors.inkLight, fontStyle: "italic" },
   members: { marginBottom: 10, gap: 2 },
   member: { fontSize: 14, color: colors.inkLight, paddingLeft: 8 },
   captureButton: {
-    backgroundColor: colors.amber,
+    backgroundColor: colors.celadon,
     borderRadius: 20,
     paddingVertical: 10,
     paddingHorizontal: 16,
     alignItems: "center",
     borderWidth: 1,
-    borderColor: colors.ink,
+    borderColor: colors.scrollBorder,
     marginTop: 4,
   },
-  captureButtonText: {
-    color: colors.ink,
-    fontFamily: "serif",
-    fontSize: 13,
-    letterSpacing: 0.5,
-  },
+  captureButtonText: { color: colors.ink, fontFamily: "serif", fontSize: 13, letterSpacing: 0.5 },
   rereadButton: {
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 24,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors.scrollBorder,
     marginVertical: 16,
+    backgroundColor: colors.scrollBg,
   },
   rereadText: { color: colors.inkLight, fontFamily: "serif", fontSize: 14 },
   disabled: { opacity: 0.5 },
-  // Modal
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(44,24,16,0.5)",
+    backgroundColor: "rgba(66,32,64,0.5)",
     justifyContent: "flex-end",
   },
   modalSheet: {
-    backgroundColor: colors.parchment,
+    backgroundColor: colors.background,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     padding: 28,
     gap: 12,
   },
-  modalTitle: {
-    fontSize: 22,
-    fontFamily: "serif",
-    color: colors.ink,
-    textAlign: "center",
-  },
+  modalTitle: { fontSize: 22, fontFamily: "serif", color: colors.ink, textAlign: "center" },
   modalSubtitle: {
     fontSize: 13,
     color: colors.inkLight,
@@ -230,7 +207,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 16,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors.scrollBorder,
   },
   targetName: { fontSize: 18, fontFamily: "serif", color: colors.ink },
   targetArrow: { fontSize: 18, color: colors.inkLight },

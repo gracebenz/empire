@@ -1,19 +1,18 @@
 export const colors = {
-  parchment: "#F5ECD7",
-  parchmentDark: "#E8D5B0",
-  ink: "#2C1810",
-  inkLight: "#5C3D2E",
-  forest: "#3A5A3A",
-  forestLight: "#5C8A5C",
-  grape: "#7B4F8A",
-  grapeLight: "#B08ABF",
-  amber: "#C4841A",
-  amberLight: "#E8B86D",
-  cream: "#FBF6EC",
-  scrollBg: "#EDD9A3",
-  border: "#A0845C",
-};
+  // Core palette
+  celadon: "#bcd8c1",
+  vanillaCustard: "#d6dbb2",
+  lightGold: "#e3d985",
+  tangerine: "#e57a44",
+  violet: "#422040",
 
-export const fonts = {
-  serif: "serif",
+  // Roles
+  background: "#d6dbb2",      // vanilla custard — main bg
+  scrollBg: "#e3d985",        // light gold — cards, scrolls
+  scrollBorder: "#bcd8c1",    // celadon — borders
+  ink: "#422040",             // midnight violet — primary text
+  inkLight: "#6b3668",        // lightened violet — secondary text
+  accent: "#e57a44",          // tangerine — primary buttons/CTAs
+  accentSoft: "#bcd8c1",      // celadon — secondary buttons
+  cream: "#f5f0e8",           // off-white — text on dark backgrounds
 };

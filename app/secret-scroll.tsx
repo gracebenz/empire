@@ -28,10 +28,6 @@ export default function SecretScrollScreen() {
     setStep("sealed");
   };
 
-  const handleDone = () => {
-    router.back();
-  };
-
   return (
     <KeyboardAvoidingView
       style={styles.container}
@@ -53,13 +49,12 @@ export default function SecretScrollScreen() {
           <Text style={styles.scrollEmoji}>📜</Text>
           <Text style={styles.title}>Your True Name</Text>
           <Text style={styles.hint}>
-            This will be shown to others so they know who to guess at.
-            It won't reveal your nickname.
+            Shown to others so they know who to guess at — not your nickname.
           </Text>
           <TextInput
             style={styles.input}
             placeholder="e.g. Grace"
-            placeholderTextColor={colors.border}
+            placeholderTextColor={colors.scrollBorder}
             value={realName}
             onChangeText={setRealName}
             autoFocus
@@ -86,7 +81,7 @@ export default function SecretScrollScreen() {
           <TextInput
             style={styles.input}
             placeholder="e.g. The Grumpy Grape"
-            placeholderTextColor={colors.border}
+            placeholderTextColor={colors.scrollBorder}
             value={nickname}
             onChangeText={setNickname}
             autoFocus
@@ -110,14 +105,17 @@ export default function SecretScrollScreen() {
           <Text style={styles.hint}>
             Hand the phone to the next player, or return to the Throne Room.
           </Text>
-          <TouchableOpacity style={styles.primaryButton} onPress={() => {
-            setStep("closed");
-            setRealName("");
-            setNickname("");
-          }}>
+          <TouchableOpacity
+            style={styles.primaryButton}
+            onPress={() => {
+              setStep("closed");
+              setRealName("");
+              setNickname("");
+            }}
+          >
             <Text style={styles.primaryButtonText}>Next Player</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.secondaryButton} onPress={handleDone}>
+          <TouchableOpacity style={styles.secondaryButton} onPress={() => router.back()}>
             <Text style={styles.secondaryButtonText}>Back to Throne Room</Text>
           </TouchableOpacity>
         </View>
@@ -129,7 +127,7 @@ export default function SecretScrollScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.scrollBg,
+    backgroundColor: colors.lightGold,
     justifyContent: "center",
   },
   center: {
@@ -156,7 +154,7 @@ const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: colors.cream,
     borderWidth: 1.5,
-    borderColor: colors.border,
+    borderColor: colors.scrollBorder,
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 14,
@@ -166,7 +164,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   primaryButton: {
-    backgroundColor: colors.forest,
+    backgroundColor: colors.accent,
     borderRadius: 32,
     paddingVertical: 14,
     paddingHorizontal: 36,
@@ -180,15 +178,11 @@ const styles = StyleSheet.create({
     fontFamily: "serif",
     letterSpacing: 1,
   },
-  secondaryButton: {
-    paddingVertical: 12,
-  },
+  secondaryButton: { paddingVertical: 12 },
   secondaryButtonText: {
     color: colors.inkLight,
     fontSize: 14,
     textDecorationLine: "underline",
   },
-  disabled: {
-    opacity: 0.4,
-  },
+  disabled: { opacity: 0.4 },
 });

@@ -15,16 +15,17 @@ export default function VictoryScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.fireworks}>🎉</Text>
-      <Text style={styles.title}>One Empire Remains!</Text>
+      <Text style={styles.label}>The Final Conquest!</Text>
+      <Text style={styles.title}>One Empire Remains</Text>
       {winner && (
         <>
           <Text style={styles.winnerLabel}>All hail</Text>
           <Text style={styles.winnerName}>{winner.realName}</Text>
           <Text style={styles.winnerNickname}>"{winner.nickname}"</Text>
-          <Text style={styles.morty}>🐭👑</Text>
-          <Text style={styles.mortyText}>
-            Morty bows to the conquering empire.
-          </Text>
+          <View style={styles.mortyBox}>
+            <Text style={styles.morty}>🐭👑</Text>
+            <Text style={styles.mortyText}>Morty bows to the conquering empire.</Text>
+          </View>
         </>
       )}
       <TouchableOpacity style={styles.button} onPress={handlePlayAgain}>
@@ -37,18 +38,24 @@ export default function VictoryScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.parchment,
+    backgroundColor: colors.background,
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 32,
-    gap: 12,
+    gap: 10,
   },
   fireworks: { fontSize: 56 },
+  label: {
+    fontSize: 13,
+    color: colors.inkLight,
+    letterSpacing: 3,
+    textTransform: "uppercase",
+  },
   title: {
-    fontSize: 32,
+    fontSize: 36,
     fontFamily: "serif",
     color: colors.ink,
-    letterSpacing: 2,
+    letterSpacing: 1,
     textAlign: "center",
   },
   winnerLabel: {
@@ -56,21 +63,22 @@ const styles = StyleSheet.create({
     color: colors.inkLight,
     letterSpacing: 2,
     textTransform: "uppercase",
-    marginTop: 16,
+    marginTop: 20,
   },
   winnerName: {
-    fontSize: 44,
+    fontSize: 48,
     fontFamily: "serif",
-    color: colors.forest,
+    color: colors.violet,
     letterSpacing: 1,
   },
   winnerNickname: {
     fontSize: 20,
     fontFamily: "serif",
-    color: colors.grape,
+    color: colors.tangerine,
     fontStyle: "italic",
   },
-  morty: { fontSize: 56, marginTop: 16 },
+  mortyBox: { alignItems: "center", marginTop: 16, gap: 6 },
+  morty: { fontSize: 56 },
   mortyText: {
     fontSize: 13,
     color: colors.inkLight,
@@ -79,17 +87,12 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 32,
-    backgroundColor: colors.forest,
+    backgroundColor: colors.accent,
     paddingHorizontal: 36,
     paddingVertical: 16,
     borderRadius: 32,
     borderWidth: 2,
     borderColor: colors.ink,
   },
-  buttonText: {
-    color: colors.cream,
-    fontSize: 16,
-    fontFamily: "serif",
-    letterSpacing: 1,
-  },
+  buttonText: { color: colors.cream, fontSize: 16, fontFamily: "serif", letterSpacing: 1 },
 });
