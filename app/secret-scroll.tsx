@@ -54,8 +54,11 @@ export default function SecretScrollScreen() {
     >
       {/* Scroll header */}
       <View style={styles.scrollHeader}>
+        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+          <Text style={styles.backButtonText}>← Throne Room</Text>
+        </TouchableOpacity>
         <Text style={styles.scrollHeaderRule}>— ✦ —</Text>
-        <Text style={styles.scrollTitle}>The Secret{"\n"}Name Scroll</Text>
+        <Text style={styles.scrollTitle}>Secret Scroll</Text>
         <Text style={styles.scrollHeaderRule}>— ✦ —</Text>
       </View>
 
@@ -122,6 +125,14 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     paddingHorizontal: 32,
     backgroundColor: colors.scrollBg,
+  },
+  backButton: { alignSelf: "flex-start", paddingBottom: 12 },
+  backButtonText: {
+    fontFamily: fonts.button,
+    fontSize: 10,
+    color: colors.inkLight,
+    letterSpacing: 2,
+    textTransform: "uppercase",
   },
   scrollHeaderRule: {
     fontSize: 16,
