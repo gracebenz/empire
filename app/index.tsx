@@ -16,7 +16,7 @@ export default function WelcomeScreen() {
       <View style={styles.content}>
         <Text style={styles.title}>Empire</Text>
         <Text style={styles.subtitle}>A Game of Nicknames & Conquest</Text>
-        <Image source={require("@/assets/morty.png")} style={styles.morty} />
+        <Image source={require("@/assets/morty_blue_background.jpg")} style={styles.morty} />
         <Text style={styles.mortyName}>Morty awaits your command</Text>
         <TouchableOpacity style={styles.button} onPress={handleBegin}>
           <Text style={styles.buttonText}>New Game</Text>
