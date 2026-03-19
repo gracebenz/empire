@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { View, Text, StyleSheet, Dimensions } from "react-native";
 import Animated, {
   useSharedValue,
@@ -14,15 +14,18 @@ import { colors, fonts } from "@/constants/theme";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
+// When the blade starts and how long it takes to cross the name
+const SLASH_START    = 500;  // ms before blade appears
+const SWEEP_DURATION = 500;  // ms to cross the full name
+
 // ── Per-character shard ───────────────────────────────────────────────────────
-// Each character of the captured name becomes its own animated shard.
 
 type ShardProps = {
   char: string;
-  dx: number;      // final translateX
-  dy: number;      // final translateY
-  rotation: number; // final rotation in radians
-  delay: number;   // stagger delay in ms
+  dx: number;
+  dy: number;
+  rotation: number;
+  delay: number; // absolute ms — when this letter gets hit by the blade
 };
 
 function CharShard({ char, dx, dy, rotation, delay }: ShardProps) {
@@ -32,15 +35,15 @@ function CharShard({ char, dx, dy, rotation, delay }: ShardProps) {
   const opacity = useSharedValue(0);
 
   useEffect(() => {
-    // Flash in immediately, then linger and fade slowly
+    // Snap visible the moment the blade hits, then linger and fade
     opacity.value = withDelay(delay, withSequence(
-      withTiming(1, { duration: 20 }),
-      withDelay(600, withTiming(0, { duration: 800 }))
+      withTiming(1, { duration: 16 }),
+      withDelay(700, withTiming(0, { duration: 900 }))
     ));
-    // Explode outward with springy physics
-    x.value = withDelay(delay, withSpring(dx, { damping: 4, stiffness: 45, mass: 1.1 }));
-    y.value = withDelay(delay, withSpring(dy, { damping: 5, stiffness: 50 }));
-    rot.value = withDelay(delay, withSpring(rotation, { damping: 6, stiffness: 55 }));
+    // Explode outward with springy physics — also triggered by the blade hit
+    x.value   = withDelay(delay, withSpring(dx,       { damping: 4, stiffness: 40, mass: 1.2 }));
+    y.value   = withDelay(delay, withSpring(dy,       { damping: 5, stiffness: 45 }));
+    rot.value = withDelay(delay, withSpring(rotation, { damping: 6, stiffness: 50 }));
   }, []);
 
   const style = useAnimatedStyle(() => ({
@@ -52,29 +55,27 @@ function CharShard({ char, dx, dy, rotation, delay }: ShardProps) {
     ],
   }));
 
-  // Spaces become a fixed-width gap so the row stays centred
   if (char === " ") return <View style={styles.spaceGap} />;
-
   return <Animated.Text style={[styles.shardChar, style]}>{char}</Animated.Text>;
 }
 
-// Deterministic direction for each shard based on its position in the name
+// Compute direction for each shard — spreads out from its position in the name
 function getShardProps(index: number, total: number): Omit<ShardProps, "char"> {
-  const progress    = total <= 1 ? 0.5 : index / (total - 1); // 0 → 1 across the name
-  const centerBias  = progress - 0.5;                          // −0.5 → 0.5
+  const progress   = total <= 1 ? 0.5 : index / (total - 1); // 0 → 1
+  const centerBias = progress - 0.5;                          // −0.5 → 0.5
 
-  // Horizontal: spread outward from the center of the name
-  const dx = centerBias * 320;
+  // Spread horizontally from the name's center
+  const dx = centerBias * 300;
 
-  // Vertical: alternate up/down so shards fan out; middle chars go further up
+  // Alternate up/down; outer chars travel further
   const upDown = index % 2 === 0 ? -1 : 1;
-  const dy = upDown * (120 + Math.abs(centerBias) * 100);
+  const dy = upDown * (110 + Math.abs(centerBias) * 90);
 
-  // Rotation: mirrors horizontal direction, with alternating spin
-  const rotation = centerBias * 2.4 + (index % 2 === 0 ? -0.5 : 0.5);
+  // Spin direction mirrors horizontal spread
+  const rotation = centerBias * 2.2 + (index % 2 === 0 ? -0.45 : 0.45);
 
-  // Light stagger so they don't all explode at the exact same frame
-  const delay = index * 30;
+  // Each char's delay = moment the blade crosses it (left → right)
+  const delay = SLASH_START + (progress * SWEEP_DURATION);
 
   return { dx, dy, rotation, delay };
 }
@@ -88,74 +89,70 @@ type Props = {
 };
 
 export default function CaptureAnimation({ capturedName, capturingName, onComplete }: Props) {
-  const [shardsVisible, setShardsVisible] = useState(false);
-
   // Overlay
   const overlayOpacity  = useSharedValue(0);
 
-  // Full name (pre-slash)
+  // Full name — fades out at the moment the blade starts
   const nameScale       = useSharedValue(0.4);
   const nameOpacity     = useSharedValue(0);
   const fullNameVisible = useSharedValue(1);
 
-  // Knife sweep — starts top-left, slashes diagonally to bottom-right
-  const knifeX          = useSharedValue(-SCREEN_WIDTH / 2 - 60);
-  const knifeY          = useSharedValue(-120);
-  const knifeOpacity    = useSharedValue(0);
+  // Blade — a thin glowing View that sweeps left → right
+  const bladeX          = useSharedValue(-SCREEN_WIDTH / 2 - 20);
+  const bladeOpacity    = useSharedValue(0);
 
-  // Slash scar line
+  // Slash scar — grows from left to right as the blade sweeps
+  const slashWidth      = useSharedValue(0);
   const slashOpacity    = useSharedValue(0);
-  const slashScaleX     = useSharedValue(0);
 
-  // White flash on impact
+  // White flash on final impact
   const flashOpacity    = useSharedValue(0);
 
   // "Merged into the Fold" label
   const absorbOpacity   = useSharedValue(0);
 
-  const showShards = () => setShardsVisible(true);
-
   useEffect(() => {
-    // ── Phase 1: Overlay + name entrance (0–350ms) ───────────
+    // ── Phase 1: Overlay + name springs in (0–400ms) ─────────
     overlayOpacity.value = withTiming(1, { duration: 200 });
     nameOpacity.value    = withTiming(1, { duration: 250 });
     nameScale.value      = withSpring(1, { damping: 10, stiffness: 180 });
 
-    // ── Phase 2: Knife sweeps diagonally (starts 900ms, sweeps 550ms) ──
-    knifeOpacity.value = withDelay(900, withTiming(1, { duration: 80 }));
-    // Diagonal Y track — top to bottom as knife crosses
-    knifeY.value = withDelay(900, withTiming(120, { duration: 550, easing: Easing.inOut(Easing.quad) }));
-    knifeX.value = withDelay(
-      900,
-      withTiming(SCREEN_WIDTH / 2 + 60, {
-        duration: 550,
-        easing: Easing.inOut(Easing.quad),
+    // ── Phase 2: Blade sweeps across (SLASH_START → +SWEEP_DURATION) ─
+    bladeOpacity.value = withDelay(SLASH_START, withTiming(1, { duration: 60 }));
+
+    // Scar line grows in sync with the blade
+    slashOpacity.value = withDelay(SLASH_START, withTiming(0.85, { duration: 60 }));
+    slashWidth.value   = withDelay(
+      SLASH_START,
+      withTiming(SCREEN_WIDTH * 0.8, { duration: SWEEP_DURATION, easing: Easing.linear })
+    );
+
+    // Hide full name the moment the blade starts
+    fullNameVisible.value = withDelay(SLASH_START, withTiming(0, { duration: 30 }));
+
+    // Blade sweeps and fades out at the end
+    bladeX.value = withDelay(
+      SLASH_START,
+      withTiming(SCREEN_WIDTH / 2 + 20, {
+        duration: SWEEP_DURATION,
+        easing: Easing.linear,
       }, () => {
-        // ── Phase 3: Impact ───────────────────────────────────
-        // White flash
+        // ── Phase 3: Impact flash ────────────────────────────
         flashOpacity.value = withSequence(
-          withTiming(0.75, { duration: 40 }),
-          withTiming(0, { duration: 300 })
+          withTiming(0.5, { duration: 40 }),
+          withTiming(0, { duration: 250 })
         );
+        // Blade fades out after crossing
+        bladeOpacity.value = withTiming(0, { duration: 150 });
 
-        // Slash scar lingers for 1.2s then fades
-        slashOpacity.value = withSequence(
-          withTiming(1, { duration: 30 }),
-          withDelay(1200, withTiming(0, { duration: 400 }))
-        );
-        slashScaleX.value = withTiming(1, { duration: 60 });
+        // Scar lingers then fades
+        slashOpacity.value = withDelay(900, withTiming(0, { duration: 500 }));
 
-        // Hide the full name and reveal the shards
-        fullNameVisible.value = withTiming(0, { duration: 30 });
-        runOnJS(showShards)();
-
-        // ── Phase 4: "Merged into the Fold" appears at 1 000ms
-        //            then onComplete fires at 3 200ms (≈2.2s to read) ──
+        // ── Phase 4: Label + completion ──────────────────────
         absorbOpacity.value = withDelay(
-          1000,
+          600,
           withTiming(1, { duration: 400 }, () => {
-            // Give the player plenty of time to read the label
-            runOnJS(setTimeout)(onComplete, 2200);
+            runOnJS(setTimeout)(onComplete, 2400);
           })
         );
       })
@@ -164,63 +161,50 @@ export default function CaptureAnimation({ capturedName, capturingName, onComple
 
   // ── Animated styles ───────────────────────────────────────
 
-  const overlayStyle    = useAnimatedStyle(() => ({ opacity: overlayOpacity.value }));
-  const fullNameStyle   = useAnimatedStyle(() => ({
+  const overlayStyle  = useAnimatedStyle(() => ({ opacity: overlayOpacity.value }));
+  const fullNameStyle = useAnimatedStyle(() => ({
     opacity: nameOpacity.value * fullNameVisible.value,
     transform: [{ scale: nameScale.value }],
   }));
-  const knifeStyle      = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: knifeX.value },
-      { translateY: knifeY.value },
-      { rotate: "35deg" },
-    ],
-    opacity: knifeOpacity.value,
+  const bladeStyle    = useAnimatedStyle(() => ({
+    transform: [{ translateX: bladeX.value }],
+    opacity: bladeOpacity.value,
   }));
-  const slashStyle      = useAnimatedStyle(() => ({
+  const slashStyle    = useAnimatedStyle(() => ({
+    width: slashWidth.value,
     opacity: slashOpacity.value,
-    transform: [{ scaleX: slashScaleX.value }],
   }));
-  const flashStyle      = useAnimatedStyle(() => ({ opacity: flashOpacity.value }));
-  const absorbStyle     = useAnimatedStyle(() => ({ opacity: absorbOpacity.value }));
+  const flashStyle    = useAnimatedStyle(() => ({ opacity: flashOpacity.value }));
+  const absorbStyle   = useAnimatedStyle(() => ({ opacity: absorbOpacity.value }));
 
   const chars = capturedName.split("");
 
   return (
     <View style={[StyleSheet.absoluteFillObject, styles.root]} pointerEvents="box-none">
-      {/* Dark backdrop */}
       <Animated.View style={[StyleSheet.absoluteFillObject, styles.overlay, overlayStyle]} />
-
-      {/* White flash on impact */}
       <Animated.View style={[StyleSheet.absoluteFillObject, styles.flash, flashStyle]} />
 
       <View style={styles.center}>
-        <Text style={styles.swordIcon}>⚔️</Text>
-
-        {/* Full name — visible before the slash */}
+        {/* Full name — visible before the blade hits */}
         <Animated.View style={fullNameStyle}>
           <Text style={styles.capturedName}>{capturedName}</Text>
         </Animated.View>
 
-        {/* Shards — individual characters that explode outward */}
-        {shardsVisible && (
-          <View style={styles.shardsRow}>
-            {chars.map((char, i) => (
-              <CharShard
-                key={i}
-                char={char}
-                {...getShardProps(i, chars.length)}
-              />
-            ))}
-          </View>
-        )}
+        {/* Shards — appear letter-by-letter as blade crosses */}
+        <View style={styles.shardsRow} pointerEvents="none">
+          {chars.map((char, i) => (
+            <CharShard key={i} char={char} {...getShardProps(i, chars.length)} />
+          ))}
+        </View>
 
-        {/* Slash scar line */}
+        {/* Scar line — grows left to right in sync with the blade */}
         <Animated.View style={[styles.slashLine, slashStyle]} />
 
-        {/* Knife */}
-        <Animated.View style={[styles.knifeContainer, knifeStyle]} pointerEvents="none">
-          <Text style={styles.knifeEmoji}>🗡️</Text>
+        {/* Blade — a glowing white sliver */}
+        <Animated.View style={[styles.bladeContainer, bladeStyle]} pointerEvents="none">
+          <View style={styles.bladeGlow} />
+          <View style={styles.bladeCore} />
+          <View style={styles.bladeGlow} />
         </Animated.View>
 
         {/* Result label */}
@@ -234,7 +218,7 @@ export default function CaptureAnimation({ capturedName, capturingName, onComple
 }
 
 const styles = StyleSheet.create({
-  root: { zIndex: 999 },
+  root:    { zIndex: 999 },
   overlay: { backgroundColor: colors.ink },
   flash:   { backgroundColor: "#fff" },
 
@@ -245,9 +229,6 @@ const styles = StyleSheet.create({
     gap: 8,
   },
 
-  swordIcon: { fontSize: 36, marginBottom: 12 },
-
-  // Full name (pre-slash)
   capturedName: {
     fontFamily: fonts.heading,
     fontSize: 36,
@@ -256,7 +237,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 
-  // Shard row — same position as the full name, characters lay in a row
   shardsRow: {
     position: "absolute",
     flexDirection: "row",
@@ -271,18 +251,35 @@ const styles = StyleSheet.create({
   },
   spaceGap: { width: 12 },
 
-  // Slash scar
+  // Scar line — starts at left edge of name, grows rightward
   slashLine: {
     position: "absolute",
-    width: "80%",
     height: 2,
     backgroundColor: colors.lightGold,
-    opacity: 0.9,
-    transform: [{ rotate: "20deg" }],
+    // Anchored to the left so it grows rightward
+    left: "10%",
   },
 
-  knifeContainer: { position: "absolute" },
-  knifeEmoji:     { fontSize: 52 },
+  // Blade — three layered views for a glow effect
+  bladeContainer: {
+    position: "absolute",
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  bladeGlow: {
+    width: 6,
+    height: 80,
+    backgroundColor: "#fff",
+    opacity: 0.25,
+    borderRadius: 3,
+  },
+  bladeCore: {
+    width: 3,
+    height: 90,
+    backgroundColor: "#fff",
+    opacity: 0.95,
+    borderRadius: 1.5,
+  },
 
   absorbContainer: {
     marginTop: 60,
