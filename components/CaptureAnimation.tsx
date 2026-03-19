@@ -86,7 +86,7 @@ export default function CaptureAnimation({
         // Slash scar line appears and fades
         slashOpacity.value = withSequence(
           withTiming(1, { duration: 30 }),
-          withDelay(200, withTiming(0, { duration: 300 }))
+          withDelay(800, withTiming(0, { duration: 400 }))
         );
         slashScaleX.value = withTiming(1, { duration: 60 });
 
@@ -96,7 +96,7 @@ export default function CaptureAnimation({
         // Top piece: flies up-left, rotates counter-clockwise, fades out
         topOpacity.value = withSequence(
           withTiming(1, { duration: 30 }),
-          withDelay(120, withTiming(0, { duration: 420 }))
+          withDelay(700, withTiming(0, { duration: 600 }))
         );
         topY.value = withSpring(-110, { damping: 6, stiffness: 85, mass: 0.8 });
         topX.value = withSpring(-50, { damping: 9, stiffness: 70 });
@@ -106,7 +106,7 @@ export default function CaptureAnimation({
         // When it finishes fading, trigger completion
         bottomOpacity.value = withSequence(
           withTiming(1, { duration: 30 }),
-          withDelay(120, withTiming(0, { duration: 420 }, () => {
+          withDelay(700, withTiming(0, { duration: 600 }, () => {
             runOnJS(onComplete)();
           }))
         );
@@ -114,8 +114,8 @@ export default function CaptureAnimation({
         bottomX.value = withSpring(50, { damping: 9, stiffness: 70 });
         bottomRotate.value = withSpring(0.35, { damping: 8, stiffness: 75 });
 
-        // Show absorb label after pieces fly away
-        absorbOpacity.value = withDelay(300, withTiming(1, { duration: 200 }));
+        // Show absorb label once pieces are clearly split apart
+        absorbOpacity.value = withDelay(500, withTiming(1, { duration: 300 }));
       })
     );
   }, []);
