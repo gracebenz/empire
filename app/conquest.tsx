@@ -9,7 +9,7 @@ import CaptureAnimation from "@/components/CaptureAnimation";
 import { getBestNarratorVoice, speakSequence } from "@/utils/voice";
 
 export default function ConquestScreen() {
-  const { players, empires, capture, phase } = useGameStore();
+  const { players, empires, capture, undoCapture, captureHistory, phase } = useGameStore();
   const [capturingFor, setCapturingFor] = useState<string | null>(null);
   const [isReading, setIsReading] = useState(false);
   const [pendingCapture, setPendingCapture] = useState<{
@@ -104,15 +104,22 @@ export default function ConquestScreen() {
         })}
       </ScrollView>
 
-      <TouchableOpacity
-        style={[styles.rereadButton, isReading && styles.disabled]}
-        onPress={rereadNames}
-        disabled={isReading}
-      >
-        <Text style={styles.rereadText}>
-          {isReading ? "🐭 Reading..." : "🐭 Re-read the Names"}
-        </Text>
-      </TouchableOpacity>
+      <View style={styles.bottomRow}>
+        <TouchableOpacity
+          style={[styles.rereadButton, isReading && styles.disabled]}
+          onPress={rereadNames}
+          disabled={isReading}
+        >
+          <Text style={styles.rereadText}>
+            {isReading ? "🐭 Reading..." : "🐭 Re-read the Names"}
+          </Text>
+        </TouchableOpacity>
+        {captureHistory.length > 0 && (
+          <TouchableOpacity style={styles.undoButton} onPress={undoCapture}>
+            <Text style={styles.undoText}>↩ Undo</Text>
+          </TouchableOpacity>
+        )}
+      </View>
 
       {/* Knife-fight animation overlay */}
       {pendingCapture && (
@@ -220,16 +227,31 @@ const styles = StyleSheet.create({
   },
   captureButtonText: { color: colors.ink, fontFamily: fonts.button, fontSize: 11, letterSpacing: 3, textTransform: "uppercase" },
   captureButtonName: { fontFamily: fonts.heading, fontSize: 12 },
+  bottomRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 12,
+    marginVertical: 16,
+  },
   rereadButton: {
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 999,
     borderWidth: 1,
     borderColor: colors.scrollBorder,
-    marginVertical: 16,
     backgroundColor: colors.scrollBg,
   },
   rereadText: { color: colors.inkLight, fontFamily: fonts.button, fontSize: 13, letterSpacing: 3, textTransform: "uppercase" },
+  undoButton: {
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: colors.scrollBorder,
+    backgroundColor: colors.background,
+  },
+  undoText: { color: colors.inkLight, fontFamily: fonts.button, fontSize: 13, letterSpacing: 3, textTransform: "uppercase" },
   disabled: { opacity: 0.5 },
   modalOverlay: {
     flex: 1,

@@ -15,6 +15,7 @@ type GameState = {
   players: Player[];
   empires: Empire[];
   phase: "throne-room" | "whispering" | "proclamation" | "conquest" | "victory";
+  captureHistory: Empire[][];
 
   // Actions
   addPlayer: (realName: string, nickname: string) => void;
@@ -22,6 +23,7 @@ type GameState = {
   startProclamation: () => void;
   startConquest: () => void;
   capture: (guesserId: string, capturedId: string) => void;
+  undoCapture: () => void;
   resetGame: () => void;
 };
 
@@ -31,6 +33,7 @@ export const useGameStore = create<GameState>((set, get) => ({
   players: [],
   empires: [],
   phase: "throne-room",
+  captureHistory: [],
 
   addPlayer: (realName, nickname) =>
     set((s) => ({
@@ -49,11 +52,11 @@ export const useGameStore = create<GameState>((set, get) => ({
       leaderId: p.id,
       memberIds: [],
     }));
-    set({ phase: "conquest", empires });
+    set({ phase: "conquest", empires, captureHistory: [] });
   },
 
   capture: (guesserId, capturedId) => {
-    const { empires } = get();
+    const { empires, captureHistory } = get();
 
     // Find the empire of the guesser (they must be a leader)
     const guesserEmpire = empires.find((e) => e.leaderId === guesserId);
@@ -97,11 +100,25 @@ export const useGameStore = create<GameState>((set, get) => ({
       });
     }
 
-    const nextEmpires = updatedEmpires;
-    const victory = nextEmpires.length === 1;
-    set({ empires: nextEmpires, phase: victory ? "victory" : "conquest" });
+    const victory = updatedEmpires.length === 1;
+    set({
+      empires: updatedEmpires,
+      phase: victory ? "victory" : "conquest",
+      captureHistory: [...captureHistory, empires],
+    });
+  },
+
+  undoCapture: () => {
+    const { captureHistory } = get();
+    if (!captureHistory.length) return;
+    const previous = captureHistory[captureHistory.length - 1];
+    set({
+      empires: previous,
+      phase: "conquest",
+      captureHistory: captureHistory.slice(0, -1),
+    });
   },
 
   resetGame: () =>
-    set({ players: [], empires: [], phase: "throne-room" }),
+    set({ players: [], empires: [], phase: "throne-room", captureHistory: [] }),
 }));
