@@ -43,6 +43,9 @@ export default function ProclamationScreen() {
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity style={styles.devButton} onPress={handleBeginConquest}>
+        <Text style={styles.devButtonText}>⚙ skip</Text>
+      </TouchableOpacity>
       <Text style={styles.title}>The Proclamation</Text>
       <Text style={styles.subtitle}>Morty reads the names aloud. Remember them well.</Text>
 
@@ -126,4 +129,6 @@ const styles = StyleSheet.create({
   },
   conquestButtonText: { color: colors.cream, fontSize: 13, fontFamily: fonts.button, letterSpacing: 4, textTransform: "uppercase" },
   disabled: { opacity: 0.5 },
+  devButton: { position: "absolute", top: 56, right: 20 },
+  devButtonText: { fontSize: 11, color: colors.inkLight, fontFamily: fonts.body, opacity: 0.5 },
 });
