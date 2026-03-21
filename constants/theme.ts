@@ -4,7 +4,7 @@
 const palette = {
   powderBlue:      "#9fbbcc",
   wisteriaBlue:    "#7a9cc6",
-  lightGold:       "#e3d985",
+  lightGold:       "#d6a912",
   darkTeal:        "#0b3c49",
   midnightViolet:  "#36151e",
   midnightViolet2: "#422040",
