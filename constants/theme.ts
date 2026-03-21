@@ -2,12 +2,13 @@
 // Swap these values to change the entire theme.
 
 const palette = {
-  powderBlue:     "#9fbbcc",
-  wisteriaBlue:   "#5a7ea8",
-  lightGold:      "#e3d985",
-  darkTeal:       "#0b3c49",
-  midnightViolet: "#422040",
-  offWhite:       "#f5f0e8",
+  powderBlue:      "#9fbbcc",
+  wisteriaBlue:    "#7a9cc6",
+  lightGold:       "#e3d985",
+  darkTeal:        "#0b3c49",
+  midnightViolet:  "#36151e",
+  midnightViolet2: "#422040",
+  offWhite:        "#f5f0e8",
 };
 
 // ─── ROLES ───────────────────────────────────────────────────────────────────
@@ -19,7 +20,7 @@ export const colors = {
   ink:          palette.darkTeal,
   inkLight:     palette.wisteriaBlue,
   accent:       palette.midnightViolet,
-  accentSoft:   palette.wisteriaBlue,
+  accentSoft:   palette.midnightViolet2,
   cream:        palette.offWhite,
   ...palette,
 };
