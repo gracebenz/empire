@@ -19,8 +19,8 @@ export default function VictoryScreen() {
       {winner && (
         <>
           <Text style={styles.winnerLabel}>All hail</Text>
-          <Text style={styles.winnerName}>{winner.realName}</Text>
           <Text style={styles.winnerNickname}>"{winner.nickname}"</Text>
+          <Text style={styles.winnerName}>{winner.realName}</Text>
           <View style={styles.mortyBox}>
             <Image source={require("@/assets/morty.png")} style={styles.morty} />
             <Text style={styles.mortyText}>Morty bows to the conquering empire.</Text>
@@ -63,16 +63,17 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
     marginTop: 20,
   },
-  winnerName: {
+  winnerNickname: {
     fontSize: 48,
     fontFamily: fonts.heading,
     color: colors.midnightViolet,
     letterSpacing: 1,
+    textAlign: "center",
   },
-  winnerNickname: {
-    fontSize: 20,
+  winnerName: {
+    fontSize: 18,
     fontFamily: fonts.body,
-    color: colors.darkTeal,
+    color: colors.inkLight,
     fontStyle: "italic",
   },
   mortyBox: { alignItems: "center", marginTop: 16, gap: 6 },
