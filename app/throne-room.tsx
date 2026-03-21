@@ -3,8 +3,28 @@ import { router } from "expo-router";
 import { useGameStore } from "@/store/gameStore";
 import { colors, fonts } from "@/constants/theme";
 
+const TEST_PLAYERS = [
+  { realName: "Grace",  nickname: "The Grumpy Grape" },
+  { realName: "Alex",   nickname: "Shadow Fox" },
+  { realName: "Jordan", nickname: "The Iron Duchess" },
+  { realName: "Sam",    nickname: "Midnight Plague" },
+  { realName: "Riley",  nickname: "The Silver Tongue" },
+];
+
 export default function ThroneRoomScreen() {
-  const { players, removePlayer, startProclamation } = useGameStore();
+  const { players, removePlayer, addPlayer, resetGame, startProclamation } = useGameStore();
+
+  const hasTestData = players.length === TEST_PLAYERS.length &&
+    players[0]?.realName === TEST_PLAYERS[0].realName;
+
+  const toggleTestData = () => {
+    if (hasTestData) {
+      resetGame();
+    } else {
+      resetGame();
+      TEST_PLAYERS.forEach((p) => addPlayer(p.realName, p.nickname));
+    }
+  };
 
   const handleSealArchive = () => {
     startProclamation();
@@ -13,6 +33,9 @@ export default function ThroneRoomScreen() {
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity style={styles.devButton} onPress={toggleTestData}>
+        <Text style={styles.devButtonText}>{hasTestData ? "✕ test" : "⚙ test"}</Text>
+      </TouchableOpacity>
       <Text style={styles.title}>Throne Room</Text>
       <Text style={styles.subtitle}>
         Pass the phone. Each player shall inscribe their secret name.
@@ -137,5 +160,16 @@ const styles = StyleSheet.create({
     fontFamily: fonts.button,
     letterSpacing: 4,
     textTransform: "uppercase",
+  },
+  devButton: {
+    position: "absolute",
+    top: 56,
+    right: 20,
+  },
+  devButtonText: {
+    fontSize: 11,
+    color: colors.inkLight,
+    fontFamily: fonts.body,
+    opacity: 0.5,
   },
 });
