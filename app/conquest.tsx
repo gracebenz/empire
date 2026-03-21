@@ -76,7 +76,7 @@ export default function ConquestScreen() {
           return (
             <View key={empire.leaderId} style={styles.empireCard}>
               <View style={styles.empireHeader}>
-                <Text style={styles.empireLeader}>👑 {leader.realName}</Text>
+                <Text style={styles.empireLeader}>{leader.realName}</Text>
                 <Text style={styles.empireSize}>
                   {empire.memberIds.length} disciple{empire.memberIds.length !== 1 ? "s" : ""}
                 </Text>
@@ -96,7 +96,7 @@ export default function ConquestScreen() {
                 onPress={() => setCapturingFor(empire.leaderId)}
               >
                 <Text style={styles.captureButtonText}>
-                  ⚔️  <Text style={styles.captureButtonName}>{leader.realName}</Text> made a capture
+                  <Text style={styles.captureButtonName}>{leader.realName}</Text> made a capture
                 </Text>
               </TouchableOpacity>
             </View>
@@ -111,7 +111,7 @@ export default function ConquestScreen() {
           disabled={isReading}
         >
           <Text style={styles.rereadText}>
-            {isReading ? "🐭 Reading..." : "🐭 Re-read the Names"}
+            {isReading ? "Reading..." : "Re-read the Names"}
           </Text>
         </TouchableOpacity>
         {captureHistory.length > 0 && (

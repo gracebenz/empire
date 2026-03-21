@@ -43,7 +43,6 @@ export default function ProclamationScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.crown}>👑</Text>
       <Text style={styles.title}>The Proclamation</Text>
       <Text style={styles.subtitle}>Morty reads the names aloud. Remember them well.</Text>
 
@@ -62,13 +61,13 @@ export default function ProclamationScreen() {
         disabled={isReading}
       >
         <Text style={styles.rereadText}>
-          {isReading ? "🐭 Reading..." : "🐭 Read Again"}
+          {isReading ? "Reading..." : "Read Again"}
         </Text>
       </TouchableOpacity>
 
       {hasRead && (
         <TouchableOpacity style={styles.conquestButton} onPress={handleBeginConquest}>
-          <Text style={styles.conquestButtonText}>⚔️  Begin the Conquest</Text>
+          <Text style={styles.conquestButtonText}>Begin the Conquest</Text>
         </TouchableOpacity>
       )}
     </View>
@@ -83,7 +82,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     alignItems: "center",
   },
-  crown: { fontSize: 40 },
   title: {
     fontSize: 32,
     fontFamily: fonts.heading,

@@ -38,7 +38,6 @@ export default function SecretScrollScreen() {
   if (step === "sealed") {
     return (
       <View style={styles.sealedContainer}>
-        <Text style={styles.sealEmoji}>🎀</Text>
         <Text style={styles.sealedTitle}>Scroll Sealed!</Text>
         <Text style={styles.sealedHint}>
           Hand the phone to the next player, or return to the Throne Room.
@@ -48,7 +47,7 @@ export default function SecretScrollScreen() {
         </TouchableOpacity>
         {players.length >= 2 && (
           <TouchableOpacity style={[styles.primaryButton, styles.nextPlayerButton, styles.beginButton]} onPress={handleBeginGame}>
-            <Text style={styles.primaryButtonText}>⚔️  Begin the Game</Text>
+            <Text style={styles.primaryButtonText}>Begin the Game</Text>
           </TouchableOpacity>
         )}
         <TouchableOpacity style={styles.ghostButton} onPress={() => router.replace("/throne-room")}>
@@ -116,7 +115,7 @@ export default function SecretScrollScreen() {
           onPress={handleSeal}
           disabled={!canSeal}
         >
-          <Text style={styles.primaryButtonText}>🔒  Seal the Scroll</Text>
+          <Text style={styles.primaryButtonText}>Seal the Scroll</Text>
         </TouchableOpacity>
 
         <Text style={styles.scrollFooterRule}>— ✦ —</Text>
@@ -245,7 +244,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
     gap: 16,
   },
-  sealEmoji: { fontSize: 64 },
   sealedTitle: {
     fontFamily: fonts.heading,
     fontSize: 28,

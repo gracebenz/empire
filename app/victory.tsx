@@ -14,7 +14,6 @@ export default function VictoryScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.fireworks}>🎉</Text>
       <Text style={styles.label}>The Final Conquest!</Text>
       <Text style={styles.title}>One Empire Remains</Text>
       {winner && (
@@ -44,7 +43,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
     gap: 10,
   },
-  fireworks: { fontSize: 56 },
   label: {
     fontSize: 13,
     color: colors.inkLight,

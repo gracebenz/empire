@@ -44,7 +44,7 @@ export default function ThroneRoomScreen() {
       {/* Bottom seal — only appears with 2+ players */}
       {players.length >= 2 && (
         <TouchableOpacity style={styles.sealButton} onPress={handleSealArchive}>
-          <Text style={styles.sealButtonText}>🐭  Seal the Archive</Text>
+          <Text style={styles.sealButtonText}>Seal the Archive</Text>
         </TouchableOpacity>
       )}
     </View>
