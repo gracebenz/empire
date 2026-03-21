@@ -1,18 +1,19 @@
+import { Platform } from "react-native";
 import * as Speech from "expo-speech";
 
 /**
  * Returns the best available local voice for a stately narrator feel.
+ * Returns undefined on web — the browser's voice API uses different
+ * identifiers and can't be reliably targeted; better to let it default.
  *
- * Priority:
- *  1. UK English (en-GB) — sounds most regal; prefer higher quality tiers
- *  2. Australian English (en-AU) — also formal, good fallback
- *  3. Any English voice sorted by quality
- *  4. null — let the OS pick
- *
- * Within each language group, voices named "Arthur" or "Daniel" are
- * preferred (deep, authoritative iOS voices).
+ * On iOS, priority:
+ *  1. UK English (en-GB) — prefer Arthur or Daniel at highest quality tier
+ *  2. Australian English (en-AU)
+ *  3. Any English, sorted by quality
  */
 export async function getBestNarratorVoice(): Promise<string | undefined> {
+  if (Platform.OS === "web") return undefined;
+
   let voices: Speech.Voice[] = [];
   try {
     voices = await Speech.getAvailableVoicesAsync();
@@ -30,12 +31,10 @@ export async function getBestNarratorVoice(): Promise<string | undefined> {
     if (lang.startsWith("en-gb")) s += 100;
     else if (lang.startsWith("en-au")) s += 50;
     else if (lang.startsWith("en")) s += 10;
-    else return -1; // non-English voices not useful here
+    else return -1;
 
-    // Higher quality tiers have larger numeric values in expo-speech
     s += (v.quality ?? 0);
 
-    // Prefer authoritative-sounding voices by name
     if (name.includes("arthur")) s += 30;
     if (name.includes("daniel")) s += 20;
 
@@ -54,34 +53,56 @@ type SpeakOptions = {
   voice?: string;
   rate?: number;
   pitch?: number;
-  pauseMs?: number;  // gap between each phrase
+  pauseMs?: number;
   onDone?: () => void;
 };
 
 /**
- * Speaks an array of phrases in order, with an optional pause between each.
+ * Speaks an array of phrases in order with an optional pause between each.
+ *
+ * Uses polling (isSpeakingAsync) as the primary completion signal on native,
+ * since onDone callbacks can silently drop on iOS when the TTS engine is
+ * still warming up. onDone is kept as an early-exit optimisation.
  */
 export function speakSequence(phrases: string[], opts: SpeakOptions = {}): void {
   const { voice, rate = 0.75, pitch = 0.85, pauseMs = 0, onDone } = opts;
+  let cancelled = false;
 
   const speak = (index: number) => {
-    if (index >= phrases.length) {
-      onDone?.();
+    if (cancelled || index >= phrases.length) {
+      if (!cancelled) onDone?.();
       return;
     }
-    Speech.speak(phrases[index], {
-      voice,
-      rate,
-      pitch,
-      onDone: () => {
-        if (index < phrases.length - 1 && pauseMs > 0) {
-          setTimeout(() => speak(index + 1), pauseMs);
-        } else {
-          speak(index + 1);
-        }
-      },
-    });
+
+    let advanced = false;
+    const advance = () => {
+      if (advanced || cancelled) return;
+      advanced = true;
+      if (pauseMs > 0 && index < phrases.length - 1) {
+        setTimeout(() => speak(index + 1), pauseMs);
+      } else {
+        speak(index + 1);
+      }
+    };
+
+    Speech.speak(phrases[index], { voice, rate, pitch, onDone: advance });
+
+    // Fallback: poll isSpeakingAsync in case onDone never fires (iOS quirk)
+    if (Platform.OS !== "web") {
+      const poll = () => {
+        if (advanced || cancelled) return;
+        Speech.isSpeakingAsync().then((speaking) => {
+          if (!speaking) advance();
+          else setTimeout(poll, 150);
+        });
+      };
+      // Give TTS a moment to start before polling
+      setTimeout(poll, 500);
+    }
   };
 
   speak(0);
+
+  // Return a cancel function (caller can ignore it)
+  return Object.assign(() => { cancelled = true; Speech.stop(); });
 }
